@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khari Arcade - Feel Good Snacking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Rum+Raisin&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khari: {
+                            orange: '#F27B21', // Saffron Orange
+                            brown: '#4A2A18',  // Dark Brown
+                            cream: '#FCF7F2',  // Off-white/Cream
+                            yellow: '#F5B82E'  // Accent yellow
+                        }
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                        rum: ['"Rum Raisin"', 'cursive'], 
+                    },
+                    boxShadow: {
+                        'bubbly': '0 8px 0 rgba(74, 42, 24, 0.1)',
+                        'bubbly-hover': '0 4px 0 rgba(74, 42, 24, 0.2)',
+                        'card': '0 10px 25px -5px rgba(242, 123, 33, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FCF7F2; 
+            color: #4A2A18; 
+            /* Subtle smile-curve background pattern */
+            background-image: radial-gradient(circle at 50% -20%, #ffffff 0%, transparent 50%);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .khari-gradient {
+            background: linear-gradient(135deg, #F27B21 0%, #D96515 100%);
+        }
+        
+        /* Animations */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Card Flip Animations */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flipped .flip-card-inner { transform: rotateY(180deg); }
+
+        /* Custom UI Elements */
+        .btn-bubbly {
+            transition: all 0.1s ease;
+        }
+        .btn-bubbly:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 rgba(74, 42, 24, 0.1) !important;
+        }
+
+        .game-item-img {
+            transition: transform 0.3s ease;
+        }
+        
+        /* CAPTCHA Selection State */
+        .captcha-item.selected {
+            border-color: #F27B21;
+            background-color: #FFF3E8; 
+            transform: scale(0.95);
+        }
+        .captcha-item.selected .game-item-img {
+            transform: scale(1.1);
+        }
+        .captcha-item.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #F27B21;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .modal-overlay {
+            background-color: rgba(74, 42, 24, 0.85); 
+            backdrop-filter: blur(8px);
+        }
+
+        /* Hide scrollbar for grid but allow scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* ============ VIBE: Floating background snacks ============ */
+        .bg-float {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.12;
+            filter: blur(0.3px);
+            animation: floaty 9s ease-in-out infinite;
+        }
+        @keyframes floaty {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-26px) rotate(8deg); }
+        }
+
+        /* ============ VIBE: Glow / shimmer text ============ */
+        .shimmer-text {
+            background: linear-gradient(90deg, #F27B21, #F5B82E, #F27B21);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .glow-pulse {
+            animation: glowPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(242,123,33,0.35); }
+            50% { box-shadow: 0 0 0 10px rgba(242,123,33,0); }
+        }
+
+        /* ============ Tier badge ============ */
+        .tier-badge {
+            font-size: 9px;
+            letter-spacing: 0.05em;
+        }
+
+        /* ============ Spin Wheel ============ */
+        .wheel-wrap {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            max-width: 85vw;
+            max-height: 85vw;
+            margin: 0 auto;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 28px solid #4A2A18;
+            z-index: 20;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25));
+        }
+        .wheel-svg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 10px 0 rgba(74,42,24,0.15), 0 0 0 8px white, 0 0 0 11px #F27B21;
+            transition: transform 4.5s cubic-bezier(0.12, 0.84, 0.18, 1);
+        }
+        .wheel-hub {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #F27B21;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Rum Raisin', cursive;
+            color: #F27B21;
+            font-size: 22px;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* ============ Memory Match ============ */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(64px, 1fr));
+            gap: 10px;
+            max-width: 32rem;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .memory-card {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+        .memory-card-inner {
+            position: relative;
+            width: 100%; height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .memory-card.is-flipped .memory-card-inner { transform: rotateY(180deg); }
+        .memory-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .memory-back {
+            background: linear-gradient(135deg, #F27B21 0%, #D96515 100%);
+            border: 3px solid rgba(255,255,255,0.25);
+        }
+        .memory-front {
+            background: white;
+            border: 3px solid #F27B21;
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 6px;
+        }
+        .memory-card.is-matched .memory-front {
+            background: #FFF3E8;
+            border-color: #5AAE5A;
+        }
+
+        /* ============ Coupon cards ============ */
+        .coupon-card {
+            background-image: repeating-linear-gradient(to bottom, transparent, transparent 7px, #F5DEC8 7px, #F5DEC8 14px);
+        }
+        .ticket-notch {
+            position: absolute;
+            width: 22px; height: 22px;
+            background: #FCF7F2;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* ============ Confetti ============ */
+        .confetti-piece {
+            position: fixed;
+            top: -10px;
+            width: 8px; height: 14px;
+            z-index: 200;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            to { transform: translateY(110vh) rotate(540deg); opacity: 0.9; }
+        }
+
+        /* ============ Sound toggle ============ */
+        .sound-btn svg { transition: transform 0.15s ease; }
+        .sound-btn:active svg { transform: scale(0.85); }
+
+        /* Mobile friendliness: ensure tap targets >= 44px and no horizontal overflow */
+        button, .captcha-item, .memory-card { touch-action: manipulation; }
+        @media (max-width: 420px) {
+            .wheel-wrap { width: 240px; height: 240px; }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- ============ LOGIN / PRELOAD SCREEN ============ -->
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-khari-cream flex items-center justify-center px-4">
+        <!-- Ambient floating decorations to match brand -->
+        <div class="bg-float hidden sm:block" style="top:12%; left:6%; animation-delay:0s;">
+            <svg class="w-14 h-14 text-khari-orange" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        <div class="bg-float hidden md:block" style="top:75%; right:8%; animation-delay:1.5s;">
+            <svg class="w-12 h-12 text-khari-yellow" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14 2 9.5h7.5z"/></svg>
+        </div>
+
+        <div class="relative bg-white w-full max-w-md rounded-[32px] shadow-card border-4 border-khari-cream p-7 sm:p-9 fade-in">
+            <div class="text-center mb-6">
+                <div class="flex items-center justify-center -mb-1">
+                    <h1 class="text-4xl sm:text-5xl font-rum text-khari-orange leading-none tracking-wide">KHAR<span class="inline-block relative">i<span class="absolute top-0 right-0 w-2 h-2 bg-white rounded-full translate-x-1 -translate-y-1"></span></span></h1>
+                </div>
+                <div class="flex items-center justify-center space-x-1 flex-wrap mb-2">
+                    <h1 class="text-2xl sm:text-3xl font-rum text-khari-brown leading-none tracking-wide ml-1">FOODS</h1>
+                </div>
+                <span class="inline-block text-[10px] md:text-xs font-bold tracking-widest text-khari-brown uppercase bg-khari-cream px-3 py-1 rounded-full border border-khari-orange/30">Daily Snack Quest Arcade</span>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-khari-brown/70 mb-1.5 ml-1">Your Name</label>
+                    <input id="login-name" type="text" required placeholder="e.g. Aarav Sharma"
+                        class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-4 py-3 text-khari-brown font-semibold outline-none bg-khari-cream/40 focus:bg-white transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-khari-brown/70 mb-1.5 ml-1">Mobile Number</label>
+                    <input id="login-mobile" type="tel" required pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"
+                        class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-4 py-3 text-khari-brown font-semibold outline-none bg-khari-cream/40 focus:bg-white transition-colors">
+                </div>
+
+                <button id="login-submit" type="submit" disabled
+                    class="w-full khari-gradient text-white px-8 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm opacity-60 cursor-not-allowed flex items-center justify-center gap-2 mt-2">
+                    <svg id="login-btn-spinner" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                    <span id="login-btn-label">Loading Snacks… 0%</span>
+                </button>
+            </form>
+
+            <!-- Preload progress bar -->
+            <div class="mt-5">
+                <div class="w-full h-2 bg-khari-cream rounded-full overflow-hidden">
+                    <div id="preload-bar" class="h-full khari-gradient rounded-full transition-all duration-200" style="width: 0%;"></div>
+                </div>
+                <p class="text-center text-[11px] text-khari-brown/50 font-semibold mt-2 tracking-wide" id="preload-label">Getting everything ready for a smooth game…</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ambient floating snack decorations (vibe layer) -->
+    <div class="bg-float hidden sm:block" style="top:12%; left:4%; animation-delay:0s;">
+        <svg class="w-14 h-14 text-khari-orange" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+    </div>
+    <div class="bg-float hidden sm:block" style="top:65%; left:8%; animation-delay:2s;">
+        <svg class="w-10 h-10 text-khari-yellow" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14 2 9.5h7.5z"/></svg>
+    </div>
+    <div class="bg-float hidden md:block" style="top:30%; right:6%; animation-delay:1s;">
+        <svg class="w-16 h-16 text-khari-brown" fill="currentColor" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="6" ry="10"/></svg>
+    </div>
+    <div class="bg-float hidden md:block" style="top:80%; right:10%; animation-delay:3s;">
+        <svg class="w-12 h-12 text-khari-orange" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+    </div>
+
+    <div id="app-root" class="hidden">
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b-4 border-khari-orange">
+        <div class="max-w-5xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center gap-2">
+            <!-- Logo Section -->
+            <div class="flex flex-col cursor-pointer transition transform hover:scale-105 shrink min-w-0" onclick="location.reload()">
+                <div class="flex items-center -mb-1">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-rum text-khari-orange leading-none tracking-wide">KHAR<span class="inline-block relative">i<span class="absolute top-0 right-0 w-2 h-2 bg-white rounded-full translate-x-1 -translate-y-1"></span></span></h1>
+                </div>
+                <div class="flex items-center space-x-1 flex-wrap">
+                    <h1 class="text-xl sm:text-2xl md:text-3xl font-rum text-khari-brown leading-none tracking-wide ml-1">FOODS</h1>
+                    <span class="text-[9px] md:text-xs font-bold tracking-widest text-khari-brown uppercase bg-khari-cream px-2 py-0.5 rounded-full mt-1 border border-khari-orange/30 hidden sm:inline-block">Feel Good Snacking</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <!-- Sound Toggle -->
+                <button id="sound-toggle" onclick="toggleSound()" class="sound-btn bg-khari-cream hover:bg-white text-khari-brown border-2 border-khari-orange/40 rounded-full w-10 h-10 flex items-center justify-center transition-colors" aria-label="Toggle sound">
+                    <svg id="sound-icon-on" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 5a9 9 0 010 14M15.5 8.5a4.5 4.5 0 010 7"></path></svg>
+                    <svg id="sound-icon-off" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 9l-6 6M17 9l6 6"></path></svg>
+                </button>
+
+                <!-- Coin Counter -->
+                <div class="flex items-center space-x-1.5 sm:space-x-2 bg-khari-cream pl-3 pr-3.5 sm:px-6 py-1.5 sm:py-2 rounded-full border-2 border-khari-orange shadow-bubbly transform transition duration-300" id="coin-container">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-khari-yellow drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12z"></path><path d="M10 4a6 6 0 100 12 6 6 0 000-12zm0 10a4 4 0 110-8 4 4 0 010 8z"></path></svg>
+                    <div class="flex flex-col items-center leading-none">
+                        <span id="coin-counter" class="font-rum text-lg sm:text-xl md:text-2xl text-khari-brown">0</span>
+                        <span id="tier-badge" class="tier-badge font-bold text-khari-orange uppercase tracking-wider hidden sm:block">New Snacker</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto px-4 py-8 md:py-12 w-full relative z-10" id="main-dashboard">
+        <div class="text-center mb-10 fade-in">
+            <span class="inline-block bg-khari-orange/10 text-khari-orange font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 border border-khari-orange/30">9 Games • Real Rewards</span>
+            <h2 class="text-4xl md:text-6xl font-rum text-khari-brown mb-3">Daily Snack Quest</h2>
+            <p class="text-base md:text-lg font-medium text-khari-brown opacity-80 max-w-2xl mx-auto">Play games, explore our healthy range, and earn <span class="shimmer-text font-bold">Khari Coins</span> you can spend on real coupons!</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
+
+            <!-- Game 1: CAPTCHA -->
+            <div class="bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('captcha')">
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:rotate-12 transition-transform">
+                    <img src="https://raw.githubusercontent.com/kharifoods/Khari-Play/main/Dried%20Strawberries.png" alt="Berries" class="w-16 h-16 object-contain drop-shadow-md">
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Khari-CAPTCHA</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Verify you're a healthy snacker by spotting the right treats.</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn 20 Coins</button>
+            </div>
+
+            <!-- Game 2: Outlier -->
+            <div class="bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('outlier')">
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:-rotate-12 transition-transform">
+                    <img src="https://raw.githubusercontent.com/kharifoods/Khari-Play/main/Walnut%20kernels.png" alt="Walnut" class="w-16 h-16 object-contain drop-shadow-md">
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">The Outlier</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Beat the clock! Spot the odd snack out before time runs out.</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn 30 Coins</button>
+            </div>
+
+            <!-- Game 3: Fortune Flip -->
+            <div class="bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('fortune')">
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:scale-110 transition-transform">
+                    <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Fortune Flip</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Pick a lucky card for an instant reward or discount.</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Test Your Luck</button>
+            </div>
+
+            <!-- Game 4: Spin the Wheel (NEW) -->
+            <div id="game-card-spin" class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('spin')">
+                <span class="absolute -top-3 -right-2 bg-khari-yellow text-khari-brown text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md rotate-6">New!</span>
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:rotate-180 transition-transform duration-700">
+                    <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle><path d="M12 3v9l6 3" stroke-width="2" stroke-linecap="round"></path></svg>
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Spin the Wheel</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">One spin, one prize! Land the jackpot for 100 coins.</p>
+                <button id="spin-card-btn" class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Spin Now</button>
+            </div>
+
+            <!-- Game 5: Memory Match (NEW) -->
+            <div class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('memory')">
+                <span class="absolute -top-3 -right-2 bg-khari-yellow text-khari-brown text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md rotate-6">New!</span>
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:scale-110 transition-transform">
+                    <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="2"></rect><rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="2"></rect><rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="2"></rect><rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="2"></rect></svg>
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Memory Match</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Flip, match pairs of snacks. Fewer moves, more coins.</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 60 Coins</button>
+            </div>
+
+            <!-- Game 6: Snack Quiz (NEW) -->
+            <div class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('quiz')">
+                <span class="absolute -top-3 -right-2 bg-khari-yellow text-khari-brown text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md rotate-6">New!</span>
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:-rotate-12 transition-transform">
+                    <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Snack Trivia</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">3 quick questions on healthy snacking. Know your stuff?</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 30 Coins</button>
+            </div>
+
+            <!-- Game 7: Scratch & Win (NEW) -->
+            <div id="game-card-scratch" class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('scratch')">
+                <span class="absolute -top-3 -right-2 bg-khari-yellow text-khari-brown text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md rotate-6">New!</span>
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:scale-110 transition-transform">
+                    <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Scratch & Win</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Scratch the panel to reveal a hidden coin prize.</p>
+                <button id="scratch-card-btn" class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 40 Coins</button>
+            </div>
+
+            <!-- Game 8: Snack Slots (NEW) -->
+            <div class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('slots')">
+                <span class="absolute -top-3 -right-2 bg-khari-yellow text-khari-brown text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md rotate-6">New!</span>
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:rotate-12 transition-transform">
+                    <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-width="2"></rect><path stroke-linecap="round" stroke-width="2" d="M8 4v16M16 4v16M3 9h18M3 15h18"></path></svg>
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Snack Slots</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Match 3 snacks in a row for a big coin payout.</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 75 Coins</button>
+            </div>
+
+            <!-- Game 9: Word Scramble (NEW) -->
+            <div class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('scramble')">
+                <span class="absolute -top-3 -right-2 bg-khari-yellow text-khari-brown text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md rotate-6">New!</span>
+                <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:-rotate-12 transition-transform">
+                    <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6m-6 4h10M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-rum text-khari-brown mb-2">Snack Scramble</h3>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Unscramble the jumbled snack name before time runs out.</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 35 Coins</button>
+            </div>
+        </div>
+
+        <!-- ============ COUPON STORE ============ -->
+        <div class="mt-16 md:mt-20" id="coupon-store">
+            <div class="text-center mb-8 fade-in">
+                <span class="inline-block bg-khari-brown/10 text-khari-brown font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 border border-khari-brown/20">Spend Your Coins</span>
+                <h2 class="text-3xl md:text-5xl font-rum text-khari-brown mb-3">The Coupon Store</h2>
+                <p class="text-base md:text-lg font-medium text-khari-brown opacity-80 max-w-2xl mx-auto">Trade in your Khari Coins for real discount codes. Redeem anytime, use at checkout.</p>
+                <div class="mt-5 flex flex-wrap justify-center items-center gap-3">
+                    <button onclick="openCouponWallet()" class="inline-flex items-center gap-2 bg-white text-khari-orange border-2 border-khari-orange font-bold px-6 py-2.5 rounded-full shadow-sm hover:bg-khari-cream transition-colors btn-bubbly uppercase tracking-wider text-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 7a2 2 0 002 2h14a2 2 0 002-2M3 7l1.5-3h15L21 7M7 12h10M7 16h6"></path></svg>
+                        My Coupons (<span id="my-coupons-count">0</span>)
+                    </button>
+                    <button onclick="refreshFromSheet()" id="sheet-refresh-btn" class="inline-flex items-center gap-2 bg-white text-khari-brown border-2 border-khari-cream font-bold px-5 py-2.5 rounded-full shadow-sm hover:bg-khari-cream transition-colors btn-bubbly uppercase tracking-wider text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Refresh
+                    </button>
+                </div>
+                <p id="sheet-status-label" class="mt-3 text-xs font-bold uppercase tracking-widest text-khari-brown/40"></p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="coupon-grid">
+                <!-- Coupon cards injected by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- ============ My Coupons Wallet Modal ============ -->
+    <div id="wallet-container" class="hidden fixed inset-0 z-[110] flex items-center justify-center modal-overlay p-4">
+        <div class="bg-khari-cream rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden pop-in relative border-8 border-white flex flex-col max-h-[85vh]">
+            <button onclick="closeCouponWallet()" class="absolute top-3 right-3 text-khari-brown hover:text-khari-orange bg-white shadow-md rounded-full p-2 transition-colors z-50 border-2 border-khari-cream">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="p-6 md:p-8 overflow-y-auto no-scrollbar">
+                <h3 class="text-3xl font-rum text-khari-orange mb-1 text-center">My Coupons</h3>
+                <p class="text-sm text-khari-brown/70 font-medium text-center mb-6">Tap a code to copy it</p>
+                <div id="wallet-list" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="relative z-10 text-center py-6 text-xs text-khari-brown/50 font-medium">
+        Khari Foods Arcade &mdash; Feel Good Snacking
+        <span class="block mt-1">
+            <button onclick="openAdminGate()" class="text-khari-brown/30 hover:text-khari-orange underline-offset-2 hover:underline text-[10px] tracking-wide">Store Admin</button>
+        </span>
+    </footer>
+
+    <!-- ============ Admin Gate (PIN entry) ============ -->
+    <div id="admin-gate-container" class="hidden fixed inset-0 z-[120] flex items-center justify-center modal-overlay p-4">
+        <div class="bg-khari-cream rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden pop-in relative border-8 border-white p-6 md:p-8 text-center">
+            <button onclick="closeAdminGate()" class="absolute top-3 right-3 text-khari-brown hover:text-khari-orange bg-white shadow-md rounded-full p-2 transition-colors border-2 border-khari-cream">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-2xl font-rum text-khari-orange mb-2">Store Admin</h3>
+            <p class="text-sm text-khari-brown/70 font-medium mb-5">Enter the admin PIN to manage real coupon codes.</p>
+            <input id="admin-pin-input" type="password" inputmode="numeric" placeholder="Admin PIN"
+                class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-5 py-3 text-khari-brown font-bold text-center text-lg outline-none mb-3 bg-white"
+                onkeydown="if(event.key==='Enter') checkAdminPin()">
+            <p id="admin-pin-error" class="hidden text-red-500 text-xs font-bold mb-3">Incorrect PIN, try again.</p>
+            <button onclick="checkAdminPin()" class="khari-gradient text-white w-full py-3 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm">
+                Unlock
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ Admin Panel (manage real coupon code pools) ============ -->
+    <div id="admin-panel-container" class="hidden fixed inset-0 z-[120] flex items-center justify-center modal-overlay p-4">
+        <div class="bg-khari-cream rounded-[32px] shadow-2xl w-full max-w-xl overflow-hidden pop-in relative border-8 border-white flex flex-col max-h-[90vh]">
+            <button onclick="closeAdminPanel()" class="absolute top-3 right-3 text-khari-brown hover:text-khari-orange bg-white shadow-md rounded-full p-2 transition-colors z-50 border-2 border-khari-cream">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="p-6 md:p-8 overflow-y-auto no-scrollbar">
+                <h3 class="text-3xl font-rum text-khari-orange mb-1 text-center">Coupon Code Manager</h3>
+                <p id="admin-mode-desc" class="text-sm text-khari-brown/70 font-medium text-center mb-6"></p>
+
+                <div id="admin-sheet-connected-box" class="hidden bg-white border-2 border-khari-orange rounded-2xl p-5 mb-4 text-left">
+                    <p class="text-sm font-bold text-khari-brown mb-2">✅ Live Google Sheet connected</p>
+                    <p class="text-xs text-khari-brown/70 font-medium leading-relaxed mb-3">Coupon types and codes are managed entirely in your Google Sheet now. Open it any time to add codes or change pricing — no need to edit this app.</p>
+                    <a id="admin-open-sheet-link" href="#" target="_blank" rel="noopener" class="hidden khari-gradient text-white inline-block px-5 py-2.5 rounded-full font-bold uppercase tracking-wider text-xs shadow-bubbly btn-bubbly">Open Google Sheet</a>
+                    <button onclick="refreshFromSheet()" class="bg-white text-khari-orange border-2 border-khari-orange inline-block px-5 py-2.5 rounded-full font-bold uppercase tracking-wider text-xs ml-2">Refresh Now</button>
+                </div>
+
+                <label class="block text-xs font-bold uppercase tracking-widest text-khari-brown/60 mb-2">Coupon Type</label>
+                <select id="admin-coupon-select" onchange="renderAdminPoolStatus()" class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-4 py-3 text-khari-brown font-bold outline-none mb-4 bg-white"></select>
+
+                <div id="admin-pool-status" class="bg-white border-2 border-khari-cream rounded-2xl px-4 py-3 mb-4 text-sm font-bold text-khari-brown"></div>
+
+                <label class="block text-xs font-bold uppercase tracking-widest text-khari-brown/60 mb-2" id="admin-textarea-label">Paste codes (one per line)</label>
+                <textarea id="admin-codes-textarea" rows="6" placeholder="KHARI10-A1B2&#10;KHARI10-C3D4&#10;KHARI10-E5F6" class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-4 py-3 text-khari-brown font-medium outline-none mb-4 bg-white"></textarea>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="addCodesToPool()" id="admin-add-btn" class="khari-gradient text-white flex-1 py-3 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm">
+                        Add Codes to Pool
+                    </button>
+                    <button onclick="clearAdminPool()" id="admin-clear-btn" class="bg-white text-khari-orange border-2 border-khari-orange flex-1 py-3 rounded-full font-bold uppercase tracking-wider text-sm hover:bg-khari-cream transition-colors">
+                        Clear Pool
+                    </button>
+                </div>
+
+                <div class="mt-6 pt-5 border-t-2 border-khari-cream/80">
+                    <p class="text-xs text-khari-brown/50 font-medium leading-relaxed" id="admin-footer-note"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay p-4">
+        <div class="bg-khari-cream rounded-[40px] shadow-2xl w-full max-w-4xl overflow-hidden pop-in relative border-8 border-white flex flex-col max-h-[95vh]">
+            
+            <button onclick="closeGame()" class="absolute top-4 right-4 text-khari-brown hover:text-khari-orange bg-white shadow-md rounded-full p-2 transition-colors z-50 border-2 border-khari-cream">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <div id="game-content" class="p-6 md:p-10 flex-grow overflow-y-auto no-scrollbar flex flex-col justify-center min-h-[400px]">
+                <!-- Dynamic Game Content Injected Here -->
+            </div>
+        </div>
+    </div>
+    </div><!-- /#app-root -->
+
+    <script>
+        // State
+        let khariCoins = parseInt(localStorage.getItem('khariCoins')) || 0;
+        let khariLifetimeCoins = parseInt(localStorage.getItem('khariLifetimeCoins')) || khariCoins;
+        let soundOn = localStorage.getItem('khariSoundOn') !== 'off';
+        let khariCoupons = JSON.parse(localStorage.getItem('khariCoupons') || '[]');
+
+        // Coupons in "My Coupons" are only valid for 2 days after redemption
+        const COUPON_VALID_MS = 2 * 24 * 60 * 60 * 1000;
+        function pruneExpiredCoupons() {
+            const before = khariCoupons.length;
+            khariCoupons = khariCoupons.filter(c => (Date.now() - (c.redeemedAt || 0)) < COUPON_VALID_MS);
+            if (khariCoupons.length !== before) {
+                localStorage.setItem('khariCoupons', JSON.stringify(khariCoupons));
+            }
+        }
+        pruneExpiredCoupons();
+        let selectedCaptchaItems = [];
+        let outlierTimer;
+        let outlierTimeLeft = 10;
+        let memoryState = null;
+        let quizState = null;
+        let wheelSpun = false;
+
+        // Base URL for Github Images
+        const GITHUB_BASE = "https://raw.githubusercontent.com/kharifoods/Khari-Play/main/";
+
+        // Complete Product Database based on provided filenames
+        const productsDB = [
+            { name: 'Ajwa Dates', category: 'Dates', file: 'Ajwa Dates.png' },
+            { name: 'Black Afghan Dates', category: 'Dates', file: 'Black Afghan Dates.png' },
+            { name: 'Dates Medjool', category: 'Dates', file: 'Dates Medjool.png' },
+            { name: 'Kimia Gold Dates', category: 'Dates', file: 'Kimia Gold Dates.png' },
+            { name: 'Zahidi Dates', category: 'Dates', file: 'Zahidi Dates.png' },
+            
+            { name: 'Dried BlueBerries', category: 'Fruits', file: 'Dried BlueBerries.png' },
+            { name: 'Dried Cherries', category: 'Fruits', file: 'Dried Cherries.png' },
+            { name: 'Dried Kiwi', category: 'Fruits', file: 'Dried Kiwi.png' },
+            { name: 'Dried Mango Slices', category: 'Fruits', file: 'Dried Mango Slices.png' },
+            { name: 'Dried Strawberries', category: 'Fruits', file: 'Dried Strawberries.png' },
+            
+            { name: 'Chia Seeds', category: 'Seeds', file: 'Chia Seeds.png' },
+            { name: 'Pumpkin Seeds', category: 'Seeds', file: 'Pumpkin Seeds.png' },
+            { name: 'Raw Flex Seeds', category: 'Seeds', file: 'Raw Flex Seeds.png' },
+            { name: 'sunflower seeds', category: 'Seeds', file: 'sunflower seeds.png' },
+            
+            { name: 'Brazil Nuts', category: 'Nuts', file: 'Brazil Nuts.png' },
+            { name: 'Pecan Nuts', category: 'Nuts', file: 'Pecan Nuts.png' },
+            { name: 'Pistachios', category: 'Nuts', file: 'Pistachios.png' },
+            { name: 'Walnut kernels', category: 'Nuts', file: 'Walnut kernels.png' },
+            
+            { name: 'Beetroot Peri Peri', category: 'Savory', file: 'Beetroot Peri Peri.png' },
+            { name: 'Jowar Pops Cheesy Tomato', category: 'Savory', file: 'Jowar Pops Cheesy Tomato.png' },
+            { name: 'Oats masala', category: 'Savory', file: 'Oats masala.png' },
+            { name: 'Ragi Tandoori', category: 'Savory', file: 'Ragi Tandoori.png' },
+
+            { name: 'Roasted Makhana Cream & Onion', category: 'Makhana', file: 'Roasted Makhana Cream & Onion.png' },
+            { name: 'Roasted Makhana Mint Pudina', category: 'Makhana', file: 'Roasted Makhana Mint Pudina.png' },
+            { name: 'Roasted Makhana Peri-Peri', category: 'Makhana', file: 'Roasted Makhana Peri-Peri.png' },
+            { name: 'Roasted Makhana Tandoori Tadka', category: 'Makhana', file: 'Roasted Makhana Tandoori Tadka.png' }
+        ];
+
+        // Helper to construct image URL securely
+        const getImageUrl = (filename) => `${GITHUB_BASE}${encodeURIComponent(filename)}`;
+
+        /* ===================================================================
+           LOGIN + IMAGE PRELOADER
+           All snack images are fetched into the browser cache while the
+           person fills in the login form, so the very first game they open
+           feels instant instead of popping images in mid-play.
+        =================================================================== */
+        (function initLoginAndPreload() {
+            const loginScreen = document.getElementById('login-screen');
+            const appRoot = document.getElementById('app-root');
+            const form = document.getElementById('login-form');
+            const submitBtn = document.getElementById('login-submit');
+            const btnLabel = document.getElementById('login-btn-label');
+            const btnSpinner = document.getElementById('login-btn-spinner');
+            const bar = document.getElementById('preload-bar');
+            const label = document.getElementById('preload-label');
+
+            // Build the full, de-duplicated list of every image the app can show
+            const imageUrls = Array.from(new Set(productsDB.map(p => getImageUrl(p.file))));
+
+            let loaded = 0;
+            const total = imageUrls.length;
+            let preloadDone = total === 0;
+
+            function updateProgress() {
+                const pct = total === 0 ? 100 : Math.min(100, Math.round((loaded / total) * 100));
+                bar.style.width = pct + '%';
+                if (!preloadDone) {
+                    label.textContent = `Getting snack photos ready… ${pct}%`;
+                }
+                if (loaded >= total && !preloadDone) {
+                    preloadDone = true;
+                    label.textContent = 'All set — everything is preloaded!';
+                }
+                maybeEnableSubmit();
+            }
+
+            imageUrls.forEach(src => {
+                const img = new Image();
+                img.onload = img.onerror = () => { loaded++; updateProgress(); };
+                img.src = src;
+            });
+            updateProgress();
+
+            // Safety net: never let a slow/blocked network trap someone on this screen.
+            setTimeout(() => {
+                if (!preloadDone) {
+                    preloadDone = true;
+                    bar.style.width = '100%';
+                    label.textContent = 'Ready to play!';
+                    maybeEnableSubmit();
+                }
+            }, 6000);
+
+            function formFilled() {
+                return document.getElementById('login-name').value.trim().length > 0 &&
+                       /^\d{10}$/.test(document.getElementById('login-mobile').value.trim());
+            }
+
+            function maybeEnableSubmit() {
+                const ready = formFilled();
+                submitBtn.disabled = !ready;
+                submitBtn.classList.toggle('opacity-60', !ready);
+                submitBtn.classList.toggle('cursor-not-allowed', !ready);
+                btnSpinner.classList.toggle('hidden', preloadDone);
+                btnLabel.textContent = ready ? 'Start Playing 🎮' : 'Enter your details to continue';
+            }
+
+            ['input', 'keyup', 'change'].forEach(evt => {
+                document.getElementById('login-name').addEventListener(evt, maybeEnableSubmit);
+                document.getElementById('login-mobile').addEventListener(evt, maybeEnableSubmit);
+            });
+            maybeEnableSubmit();
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (submitBtn.disabled) return;
+
+                const name = document.getElementById('login-name').value.trim();
+                const mobile = document.getElementById('login-mobile').value.trim();
+                try {
+                    localStorage.setItem('khariPlayerName', name);
+                    localStorage.setItem('khariPlayerMobile', mobile);
+                } catch (err) {}
+
+                loginScreen.style.transition = 'opacity 0.4s ease';
+                loginScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loginScreen.classList.add('hidden');
+                    appRoot.classList.remove('hidden');
+                }, 400);
+            });
+        })();
+
+        // Initialize UI
+        document.getElementById('coin-counter').innerText = khariCoins;
+
+        const DOM = {
+            gameContainer: document.getElementById('game-container'),
+            gameContent: document.getElementById('game-content'),
+            coinContainer: document.getElementById('coin-container'),
+            coinCounter: document.getElementById('coin-counter')
+        };
+
+        /* ===================== SOUND (WebAudio, no assets needed) ===================== */
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx) {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (AC) audioCtx = new AC();
+            }
+            return audioCtx;
+        }
+        function beep(freq, duration, type, startGain, delay) {
+            if (!soundOn) return;
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type || 'sine';
+            osc.frequency.value = freq;
+            const t0 = ctx.currentTime + (delay || 0);
+            gain.gain.setValueAtTime(startGain || 0.12, t0);
+            gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(t0);
+            osc.stop(t0 + duration);
+        }
+        function playClick() { beep(420, 0.08, 'square', 0.05, 0); }
+        function playCoin() { beep(880, 0.12, 'triangle', 0.1, 0); beep(1320, 0.15, 'triangle', 0.08, 0.05); }
+        function playWin() {
+            [523, 659, 784, 1046].forEach((f, i) => beep(f, 0.22, 'triangle', 0.1, i * 0.09));
+        }
+        function playWhoosh() { beep(180, 0.4, 'sawtooth', 0.04, 0); }
+
+        function toggleSound() {
+            soundOn = !soundOn;
+            localStorage.setItem('khariSoundOn', soundOn ? 'on' : 'off');
+            document.getElementById('sound-icon-on').classList.toggle('hidden', !soundOn);
+            document.getElementById('sound-icon-off').classList.toggle('hidden', soundOn);
+            if (soundOn) playClick();
+        }
+        (function initSoundIcon() {
+            document.getElementById('sound-icon-on').classList.toggle('hidden', !soundOn);
+            document.getElementById('sound-icon-off').classList.toggle('hidden', soundOn);
+        })();
+
+        /* ===================== CONFETTI ===================== */
+        function spawnConfetti(count) {
+            const colors = ['#F27B21', '#F5B82E', '#4A2A18', '#5AAE5A', '#FFFFFF'];
+            const n = count || 60;
+            for (let i = 0; i < n; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                const duration = 2.2 + Math.random() * 1.6;
+                piece.style.animationDuration = duration + 's';
+                piece.style.animationDelay = (Math.random() * 0.4) + 's';
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), (duration + 0.5) * 1000);
+            }
+        }
+
+        /* ===================== TIERS ===================== */
+        const TIERS = [
+            { min: 0, name: 'New Snacker' },
+            { min: 100, name: 'Snack Explorer' },
+            { min: 300, name: 'Snack Pro' },
+            { min: 600, name: 'Snack Master' },
+            { min: 1000, name: 'Snack Legend' }
+        ];
+        function getTierName(lifetime) {
+            let name = TIERS[0].name;
+            for (const t of TIERS) { if (lifetime >= t.min) name = t.name; }
+            return name;
+        }
+        function updateTierBadge() {
+            const badge = document.getElementById('tier-badge');
+            if (badge) badge.innerText = getTierName(khariLifetimeCoins);
+        }
+        updateTierBadge();
+
+        function addCoins(amount) {
+            khariCoins += amount;
+            if (amount > 0) khariLifetimeCoins += amount;
+            localStorage.setItem('khariCoins', khariCoins);
+            localStorage.setItem('khariLifetimeCoins', khariLifetimeCoins);
+            
+            // Animate Counter
+            DOM.coinCounter.innerText = khariCoins;
+            DOM.coinContainer.classList.add('scale-110', 'bg-khari-yellow', 'border-white');
+            setTimeout(() => {
+                DOM.coinContainer.classList.remove('scale-110', 'bg-khari-yellow', 'border-white');
+            }, 400);
+            if (amount > 0) playCoin();
+            updateTierBadge();
+            renderCoupons();
+        }
+
+        function closeGame() {
+            clearInterval(outlierTimer);
+            DOM.gameContainer.classList.add('hidden');
+            memoryState = null;
+            quizState = null;
+            wheelSpun = false;
+        }
+
+        /* ===================================================================
+           NON-EFFORT GAME COOLDOWN (Spin the Wheel / Scratch & Win)
+           These take almost no skill/effort, so after each play they lock
+           on the dashboard for 2 minutes — nudging people toward a
+           different game in the meantime instead of farming the same one.
+        =================================================================== */
+        const NON_EFFORT_COOLDOWN_MS = 2 * 60 * 1000;
+        let khariCooldowns = JSON.parse(localStorage.getItem('khariCooldowns') || '{}');
+        const COOLDOWN_LABELS = { spin: 'Spin Now', scratch: 'Earn up to 40 Coins' };
+
+        function setCooldown(key) {
+            khariCooldowns[key] = Date.now() + NON_EFFORT_COOLDOWN_MS;
+            localStorage.setItem('khariCooldowns', JSON.stringify(khariCooldowns));
+            updateCooldownUI();
+        }
+
+        function getCooldownRemaining(key) {
+            return Math.max(0, (khariCooldowns[key] || 0) - Date.now());
+        }
+
+        function isOnCooldown(key) {
+            return getCooldownRemaining(key) > 0;
+        }
+
+        function updateCooldownUI() {
+            Object.keys(COOLDOWN_LABELS).forEach(key => {
+                const card = document.getElementById(`game-card-${key}`);
+                const btn = document.getElementById(`${key}-card-btn`);
+                if (!card || !btn) return;
+                const remaining = getCooldownRemaining(key);
+                if (remaining > 0) {
+                    const m = Math.floor(remaining / 60000);
+                    const s = Math.floor((remaining % 60000) / 1000);
+                    btn.textContent = `Locked · ${m}:${s.toString().padStart(2, '0')}`;
+                    card.classList.add('opacity-50', 'pointer-events-none', 'grayscale');
+                } else {
+                    btn.textContent = COOLDOWN_LABELS[key];
+                    card.classList.remove('opacity-50', 'pointer-events-none', 'grayscale');
+                }
+            });
+        }
+        updateCooldownUI();
+        setInterval(updateCooldownUI, 1000);
+
+        function getItemsByCategory(category, count) {
+            const filtered = productsDB.filter(p => p.category === category);
+            return filtered.sort(() => 0.5 - Math.random()).slice(0, count);
+        }
+
+        function getItemsExcludeCategory(category, count) {
+            const filtered = productsDB.filter(p => p.category !== category);
+            return filtered.sort(() => 0.5 - Math.random()).slice(0, count);
+        }
+
+        function showResult(title, message, isSuccess, reward = 0) {
+            const color = isSuccess ? 'text-khari-orange' : 'text-khari-brown';
+            const icon = isSuccess 
+                ? `<svg class="w-24 h-24 text-khari-orange mx-auto mb-4 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+                : `<svg class="w-24 h-24 text-khari-brown mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+
+            if (isSuccess && reward > 0) addCoins(reward);
+            if (isSuccess) { playWin(); spawnConfetti(reward >= 50 ? 90 : 50); }
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center py-8 fade-in flex flex-col items-center justify-center h-full">
+                    ${icon}
+                    <h2 class="text-5xl md:text-6xl font-rum ${color} mb-4">${title}</h2>
+                    <p class="text-xl md:text-2xl text-khari-brown mb-2 font-medium max-w-md">${message}</p>
+                    ${isSuccess && reward > 0 ? `<p class="text-khari-orange font-bold text-lg mb-8">+${reward} Khari Coins Added!</p>` : '<div class="mb-8"></div>'}
+                    <button onclick="closeGame()" class="khari-gradient text-white px-12 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-widest text-lg w-full md:w-auto">
+                        ${isSuccess ? 'Awesome!' : 'Try Again Later'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function startGame(gameType) {
+            if ((gameType === 'spin' || gameType === 'scratch') && isOnCooldown(gameType)) {
+                playClick();
+                return;
+            }
+            playClick();
+            DOM.gameContainer.classList.remove('hidden');
+            DOM.gameContent.innerHTML = `
+                <div class="flex justify-center items-center h-64">
+                    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-khari-orange"></div>
+                </div>
+            `; 
+            
+            // Small delay for UI smoothness
+            setTimeout(() => {
+                if (gameType === 'captcha') initCaptcha();
+                if (gameType === 'outlier') initOutlier();
+                if (gameType === 'fortune') initFortune();
+                if (gameType === 'spin') initSpin();
+                if (gameType === 'memory') initMemory();
+                if (gameType === 'quiz') initQuiz();
+                if (gameType === 'scratch') initScratch();
+                if (gameType === 'slots') initSlots();
+                if (gameType === 'scramble') initScramble();
+            }, 300);
+        }
+
+        function initCaptcha() {
+            selectedCaptchaItems = [];
+            const categories = ['Fruits', 'Nuts', 'Seeds', 'Dates', 'Savory', 'Makhana'];
+            const targetCategory = categories[Math.floor(Math.random() * categories.length)];
+            
+            // Ensure we have exactly 3 targets and 6 decoys for a 3x3 grid
+            const targetItems = getItemsByCategory(targetCategory, 3);
+            const decoyItems = getItemsExcludeCategory(targetCategory, 6);
+            
+            let allItems = [...targetItems, ...decoyItems].sort(() => 0.5 - Math.random());
+
+            let gridHTML = `<div class="grid grid-cols-3 gap-3 md:gap-4 mb-6 max-w-2xl mx-auto">`;
+            allItems.forEach((item, index) => {
+                const isTarget = item.category === targetCategory;
+                const imgUrl = getImageUrl(item.file);
+                
+                gridHTML += `
+                    <div class="captcha-item relative bg-white border-4 border-khari-cream rounded-2xl p-2 md:p-4 cursor-pointer transition-all flex flex-col items-center justify-center text-center aspect-square hover:border-khari-orange/50 shadow-sm" 
+                         data-target="${isTarget}" 
+                         data-index="${index}">
+                        <div class="h-16 w-16 md:h-24 md:w-24 mb-2 flex items-center justify-center">
+                            <img src="${imgUrl}" alt="${item.name}" class="game-item-img max-h-full max-w-full object-contain drop-shadow-sm" onerror="this.src='https://placehold.co/200x200/FCF7F2/F27B21?text=Khari+Foods'">
+                        </div>
+                        <span class="font-bold text-khari-brown text-[10px] md:text-xs leading-tight line-clamp-2">${item.name}</span>
+                    </div>
+                `;
+            });
+            gridHTML += `</div>`;
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-6 fade-in">
+                    <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Khari-CAPTCHA</h2>
+                    <p class="text-khari-brown mt-2 font-semibold md:text-lg">Select all images containing <span class="text-white font-bold px-3 py-1 bg-khari-orange rounded-lg shadow-sm uppercase tracking-wider">${targetCategory}</span></p>
+                </div>
+                ${gridHTML}
+                <div class="flex justify-center mt-auto">
+                    <button id="verify-btn" class="w-full md:w-96 bg-gray-300 text-gray-500 font-bold py-4 rounded-full cursor-not-allowed transition-all uppercase tracking-widest text-lg">Verify Humanity</button>
+                </div>
+            `;
+
+            const items = document.querySelectorAll('.captcha-item');
+            const verifyBtn = document.getElementById('verify-btn');
+
+            items.forEach(el => {
+                el.onclick = function() {
+                    playClick();
+                    this.classList.toggle('selected');
+                    if (this.classList.contains('selected')) {
+                        selectedCaptchaItems.push(this);
+                    } else {
+                        selectedCaptchaItems = selectedCaptchaItems.filter(i => i !== this);
+                    }
+                    
+                    if (selectedCaptchaItems.length > 0) {
+                        verifyBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                        verifyBtn.classList.add('khari-gradient', 'text-white', 'shadow-bubbly', 'btn-bubbly');
+                        verifyBtn.disabled = false;
+                    } else {
+                        verifyBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                        verifyBtn.classList.remove('khari-gradient', 'text-white', 'shadow-bubbly', 'btn-bubbly');
+                        verifyBtn.disabled = true;
+                    }
+                }
+            });
+
+            verifyBtn.disabled = true;
+            verifyBtn.onclick = () => {
+                if(selectedCaptchaItems.length === 0) return;
+
+                let allSelectedCorrect = true;
+                let numTargetsSelected = 0;
+
+                selectedCaptchaItems.forEach(el => {
+                    if (el.dataset.target === "false") allSelectedCorrect = false;
+                    if (el.dataset.target === "true") numTargetsSelected++;
+                });
+
+                if (allSelectedCorrect && numTargetsSelected === targetItems.length) {
+                    showResult("Verified!", "You clearly know your healthy snacks.", true, 20);
+                } else {
+                    DOM.gameContent.classList.add('shake');
+                    setTimeout(() => DOM.gameContent.classList.remove('shake'), 500);
+                    showResult("Oops!", "That wasn't quite right. Review our product categories and try again.", false);
+                }
+            };
+        }
+
+        function initOutlier() {
+            outlierTimeLeft = 10;
+            const categories = ['Fruits', 'Nuts', 'Dates', 'Makhana']; // Categories with enough distinct images
+            const baseCat = categories[Math.floor(Math.random() * categories.length)];
+            
+            const targetItems = getItemsByCategory(baseCat, 3);
+            const outlierItem = getItemsExcludeCategory(baseCat, 1)[0];
+            
+            let displayItems = [...targetItems, outlierItem].sort(() => 0.5 - Math.random());
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-8 fade-in">
+                    <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Find the Odd One Out!</h2>
+                    <p class="text-khari-brown font-semibold mt-2 md:text-lg">Which snack belongs to a different category?</p>
+                    <div class="mt-4 flex justify-center items-center">
+                        <div class="bg-white text-khari-orange font-bold text-3xl px-6 py-2 rounded-full flex items-center border-4 border-khari-cream shadow-sm font-rum">
+                            <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span id="timer-display">10</span>s
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto" id="outlier-grid">
+                    <!-- Cards injected here -->
+                </div>
+            `;
+
+            const grid = document.getElementById('outlier-grid');
+            displayItems.forEach((item) => {
+                const isOutlier = (item.name === outlierItem.name);
+                const imgUrl = getImageUrl(item.file);
+                
+                grid.innerHTML += `
+                    <div class="bg-white hover:bg-khari-cream border-4 border-khari-cream rounded-3xl p-4 md:p-6 cursor-pointer transition-transform transform hover:scale-105 hover:border-khari-orange flex flex-col items-center justify-center text-center h-48 md:h-56 shadow-sm" 
+                         onclick="handleOutlierClick(${isOutlier}, '${item.name}', '${item.category}')">
+                        <img src="${imgUrl}" alt="${item.name}" class="h-20 md:h-28 object-contain mb-4 drop-shadow-md" onerror="this.src='https://placehold.co/200x200/FCF7F2/F27B21?text=Snack'">
+                        <span class="font-bold text-khari-brown text-sm md:text-base leading-tight">${item.name}</span>
+                    </div>
+                `;
+            });
+
+            clearInterval(outlierTimer);
+            outlierTimer = setInterval(() => {
+                outlierTimeLeft--;
+                const timerDisplay = document.getElementById('timer-display');
+                if(timerDisplay) timerDisplay.innerText = outlierTimeLeft;
+                
+                if (outlierTimeLeft <= 3 && timerDisplay) {
+                    timerDisplay.parentElement.classList.add('text-red-500', 'animate-pulse');
+                }
+
+                if (outlierTimeLeft <= 0) {
+                    clearInterval(outlierTimer);
+                    showResult("Time's Up!", "You didn't find the odd snack fast enough.", false);
+                }
+            }, 1000);
+        }
+
+        function handleOutlierClick(isOutlier, name, category) {
+            playClick();
+            clearInterval(outlierTimer);
+            if (isOutlier) {
+                showResult("Sharp Eye!", `Correct! ${name} is a ${category}.`, true, 30);
+            } else {
+                showResult("Not quite!", "That snack fits with the main group.", false);
+            }
+        }
+
+        function initFortune() {
+            const prizes = [
+                { title: "Healthy Habit!", text: "15% OFF next order.", code: "HABIT15" },
+                { title: "Seed Surprise!", text: "Free Pumpkin Seeds.", code: "FREESEED" },
+                { title: "Lucky Day!", text: "Buy 1 Get 1 Snack Mix.", code: "BOGO1" }
+            ].sort(() => 0.5 - Math.random());
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-10 fade-in">
+                    <h2 class="text-4xl md:text-5xl font-rum text-khari-orange">The Fortune Flip</h2>
+                    <p class="text-khari-brown mt-2 font-semibold text-lg">Pick one card for an instant sweet reward!</p>
+                </div>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-8 perspective-1000">
+                    ${[0, 1, 2].map(i => `
+                        <div class="w-48 h-64 md:w-56 md:h-80 cursor-pointer group" id="card-${i}" onclick="flipCard(${i})">
+                            <div class="flip-card-inner relative w-full h-full text-center shadow-card rounded-3xl">
+                                
+                                <!-- Front of card -->
+                                <div class="absolute w-full h-full backface-hidden khari-gradient rounded-3xl flex flex-col items-center justify-center border-[6px] border-white/20">
+                                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4">
+                                        <h3 class="font-rum text-white text-5xl drop-shadow-md">K</h3>
+                                    </div>
+                                    <span class="text-white/90 font-bold tracking-widest uppercase text-sm">Pick Me</span>
+                                </div>
+                                
+                                <!-- Back of card -->
+                                <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-white border-4 border-khari-orange rounded-3xl p-6 flex flex-col items-center justify-center shadow-xl">
+                                    <svg class="w-12 h-12 text-khari-orange mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
+                                    <h4 class="font-rum text-2xl text-khari-brown mb-2 leading-tight" id="prize-title-${i}"></h4>
+                                    <p class="text-sm font-semibold text-khari-brown/70 text-center mb-4" id="prize-text-${i}"></p>
+                                    <div class="bg-khari-cream border border-khari-orange/30 px-4 py-2 rounded border-dashed text-khari-orange font-bold tracking-wider" id="prize-code-${i}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            window.currentPrizes = prizes;
+            window.cardFlipped = false;
+        }
+
+        function flipCard(index) {
+            if (window.cardFlipped) return;
+            window.cardFlipped = true;
+            playWhoosh();
+
+            const card = document.getElementById(`card-${index}`);
+            const prize = window.currentPrizes[index];
+            
+            document.getElementById(`prize-title-${index}`).innerText = prize.title;
+            document.getElementById(`prize-text-${index}`).innerText = prize.text;
+            document.getElementById(`prize-code-${index}`).innerText = prize.code;
+            
+            card.classList.add('flipped');
+
+            // Dim unselected cards
+            [0, 1, 2].forEach(i => {
+                if (i !== index) {
+                    const otherCard = document.getElementById(`card-${i}`);
+                    otherCard.style.opacity = '0.5';
+                    otherCard.style.transform = 'scale(0.9)';
+                    otherCard.style.pointerEvents = 'none';
+                }
+            });
+
+            // Reward sequence
+            setTimeout(() => {
+                addCoins(50); // Bonus for playing
+                setTimeout(() => {
+                    playWin();
+                    spawnConfetti(70);
+                    DOM.gameContent.innerHTML = `
+                        <div class="text-center py-8 fade-in flex flex-col items-center justify-center h-full">
+                            <div class="relative">
+                                <svg class="w-24 h-24 text-khari-orange mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="absolute top-0 right-0 animate-ping h-4 w-4 rounded-full bg-khari-yellow opacity-75"></span>
+                            </div>
+                            <h2 class="text-5xl font-rum text-khari-orange mb-2">You Won!</h2>
+                            <p class="text-2xl text-khari-brown font-bold mb-2">${prize.text}</p>
+                            <p class="text-khari-brown/70 mb-6 font-medium">Use code <span class="text-khari-orange font-bold border-b-2 border-dashed border-khari-orange">${prize.code}</span> at checkout.</p>
+                            <p class="text-sm font-bold text-khari-yellow bg-white px-4 py-2 rounded-full shadow-sm mb-8">+50 Bonus Coins Added!</p>
+                            <button onclick="closeGame()" class="khari-gradient text-white px-12 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-widest text-lg">
+                                Claim Reward
+                            </button>
+                        </div>
+                    `;
+                }, 1500);
+            }, 800);
+        }
+
+        /* ===================================================================
+           GAME 4: SPIN THE WHEEL
+        =================================================================== */
+        const WHEEL_SEGMENTS = [
+            { label: '10', coins: 10, weight: 20, fill: '#F27B21' },
+            { label: 'Again', coins: 0, weight: 14, fill: '#4A2A18' },
+            { label: '20', coins: 20, weight: 18, fill: '#F5B82E' },
+            { label: '5', coins: 5, weight: 20, fill: '#F27B21' },
+            { label: '50', coins: 50, weight: 8, fill: '#4A2A18' },
+            { label: '15', coins: 15, weight: 16, fill: '#F5B82E' },
+            { label: 'JACKPOT', coins: 100, weight: 3, fill: '#F27B21' },
+            { label: '25', coins: 25, weight: 13, fill: '#4A2A18' }
+        ];
+
+        function buildWheelSVG() {
+            const n = WHEEL_SEGMENTS.length;
+            const slice = 360 / n;
+            const cx = 150, cy = 150, r = 148;
+            let paths = '';
+            WHEEL_SEGMENTS.forEach((seg, i) => {
+                const startAngle = i * slice;
+                const endAngle = startAngle + slice;
+                const toRad = (a) => (a - 90) * Math.PI / 180;
+                const x1 = cx + r * Math.cos(toRad(startAngle));
+                const y1 = cy + r * Math.sin(toRad(startAngle));
+                const x2 = cx + r * Math.cos(toRad(endAngle));
+                const y2 = cy + r * Math.sin(toRad(endAngle));
+                paths += `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 0,1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${seg.fill}" stroke="white" stroke-width="2"/>`;
+
+                const midAngle = startAngle + slice / 2;
+                const textR = r * 0.62;
+                const tx = cx + textR * Math.cos(toRad(midAngle));
+                const ty = cy + textR * Math.sin(toRad(midAngle));
+                const textColor = (seg.fill === '#F5B82E') ? '#4A2A18' : 'white';
+                paths += `<text x="${tx.toFixed(2)}" y="${ty.toFixed(2)}" fill="${textColor}" font-size="${seg.label === 'JACKPOT' ? 12 : 17}" font-weight="800" text-anchor="middle" dominant-baseline="middle" transform="rotate(${midAngle}, ${tx.toFixed(2)}, ${ty.toFixed(2)})" font-family="Poppins, sans-serif">${seg.label}</text>`;
+            });
+            return `<svg class="wheel-svg" id="wheel-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">${paths}</svg>`;
+        }
+
+        function pickWeightedSegment() {
+            const total = WHEEL_SEGMENTS.reduce((s, w) => s + w.weight, 0);
+            let r = Math.random() * total;
+            for (let i = 0; i < WHEEL_SEGMENTS.length; i++) {
+                r -= WHEEL_SEGMENTS[i].weight;
+                if (r <= 0) return i;
+            }
+            return 0;
+        }
+
+        function initSpin() {
+            wheelSpun = false;
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-6 fade-in">
+                    <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Spin the Wheel</h2>
+                    <p class="text-khari-brown mt-2 font-semibold md:text-lg">One spin per visit. Good luck!</p>
+                </div>
+                <div class="wheel-wrap">
+                    <div class="wheel-pointer"></div>
+                    ${buildWheelSVG()}
+                    <div class="wheel-hub">K</div>
+                </div>
+                <div class="flex justify-center mt-8">
+                    <button id="spin-btn" onclick="spinWheel()" class="khari-gradient text-white px-12 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-widest text-lg glow-pulse">
+                        Spin Now
+                    </button>
+                </div>
+            `;
+        }
+
+        function spinWheel() {
+            if (wheelSpun) return;
+            wheelSpun = true;
+            setCooldown('spin');
+            playWhoosh();
+
+            const btn = document.getElementById('spin-btn');
+            btn.disabled = true;
+            btn.classList.remove('glow-pulse');
+            btn.classList.add('opacity-60', 'cursor-not-allowed');
+            btn.innerText = 'Spinning...';
+
+            const winnerIndex = pickWeightedSegment();
+            const n = WHEEL_SEGMENTS.length;
+            const slice = 360 / n;
+            const segCenter = winnerIndex * slice + slice / 2;
+            const fullSpins = 6;
+            // Wheel's 0deg segment center sits at top-ish; rotate so winner lands under pointer (top, 0deg)
+            const finalRotation = fullSpins * 360 + (360 - segCenter);
+
+            const svg = document.getElementById('wheel-svg');
+            svg.style.transform = `rotate(${finalRotation}deg)`;
+
+            setTimeout(() => {
+                const seg = WHEEL_SEGMENTS[winnerIndex];
+                if (seg.coins > 0) {
+                    showResult(seg.label === 'JACKPOT' ? 'JACKPOT!!' : 'Nice Spin!', `The wheel landed on ${seg.coins} coins.`, true, seg.coins);
+                } else {
+                    showResult('So Close!', 'Landed on "Spin Again" — no coins this time.', false);
+                }
+            }, 4700);
+        }
+
+        /* ===================================================================
+           GAME 5: MEMORY MATCH
+        =================================================================== */
+        function initMemory() {
+            const chosen = [...productsDB].sort(() => 0.5 - Math.random()).slice(0, 6);
+            let deck = [...chosen, ...chosen].map((item, idx) => ({ ...item, uid: idx }));
+            deck = deck.sort(() => 0.5 - Math.random());
+
+            memoryState = {
+                deck,
+                flipped: [],
+                matched: new Set(),
+                moves: 0,
+                locked: false
+            };
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-5 fade-in">
+                    <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Memory Match</h2>
+                    <p class="text-khari-brown mt-1 font-semibold md:text-lg">Find all 6 pairs. Fewer moves = more coins.</p>
+                    <div class="mt-3 inline-block bg-white border-2 border-khari-cream rounded-full px-5 py-1.5 font-bold text-khari-brown">
+                        Moves: <span id="memory-moves">0</span>
+                    </div>
+                </div>
+                <div class="memory-grid" id="memory-grid"></div>
+            `;
+
+            const grid = document.getElementById('memory-grid');
+            deck.forEach((item) => {
+                const imgUrl = getImageUrl(item.file);
+                const cardEl = document.createElement('div');
+                cardEl.className = 'memory-card';
+                cardEl.id = `mem-card-${item.uid}`;
+                cardEl.onclick = () => flipMemoryCard(item.uid);
+                cardEl.innerHTML = `
+                    <div class="memory-card-inner">
+                        <div class="memory-face memory-back">
+                            <span class="font-rum text-white text-2xl">K</span>
+                        </div>
+                        <div class="memory-face memory-front">
+                            <img src="${imgUrl}" alt="${item.name}" class="h-8 sm:h-10 object-contain mb-1" onerror="this.src='https://placehold.co/100x100/FCF7F2/F27B21?text=K'">
+                            <span class="text-[8px] sm:text-[9px] font-bold text-khari-brown leading-tight text-center line-clamp-2">${item.name}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(cardEl);
+            });
+        }
+
+        function flipMemoryCard(uid) {
+            if (!memoryState || memoryState.locked) return;
+            if (memoryState.matched.has(uid)) return;
+            if (memoryState.flipped.includes(uid)) return;
+            if (memoryState.flipped.length >= 2) return;
+
+            playClick();
+            const cardEl = document.getElementById(`mem-card-${uid}`);
+            cardEl.classList.add('is-flipped');
+            memoryState.flipped.push(uid);
+
+            if (memoryState.flipped.length === 2) {
+                memoryState.moves++;
+                document.getElementById('memory-moves').innerText = memoryState.moves;
+                memoryState.locked = true;
+
+                const [a, b] = memoryState.flipped;
+                const itemA = memoryState.deck.find(d => d.uid === a);
+                const itemB = memoryState.deck.find(d => d.uid === b);
+
+                if (itemA.name === itemB.name) {
+                    memoryState.matched.add(a);
+                    memoryState.matched.add(b);
+                    setTimeout(() => {
+                        document.getElementById(`mem-card-${a}`).classList.add('is-matched');
+                        document.getElementById(`mem-card-${b}`).classList.add('is-matched');
+                        memoryState.flipped = [];
+                        memoryState.locked = false;
+
+                        if (memoryState.matched.size === memoryState.deck.length) {
+                            const moves = memoryState.moves;
+                            const reward = Math.max(20, 60 - Math.max(0, moves - 6) * 4);
+                            setTimeout(() => showResult('All Matched!', `You finished in ${moves} moves.`, true, reward), 400);
+                        }
+                    }, 350);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById(`mem-card-${a}`).classList.remove('is-flipped');
+                        document.getElementById(`mem-card-${b}`).classList.remove('is-flipped');
+                        memoryState.flipped = [];
+                        memoryState.locked = false;
+                    }, 750);
+                }
+            }
+        }
+
+        /* ===================================================================
+           GAME 6: SNACK TRIVIA
+        =================================================================== */
+        const QUIZ_BANK = [
+            { q: "Which dried fruit is naturally high in fiber and a popular date substitute for sweetening dishes?", options: ["Medjool Dates", "Dried Kiwi", "Dried BlueBerries", "Pumpkin Seeds"], a: 0 },
+            { q: "Which nut is well known for its high Omega-3 content?", options: ["Pistachios", "Walnuts", "Brazil Nuts", "Pecans"], a: 1 },
+            { q: "Chia and flax are both types of which snack category?", options: ["Nuts", "Dates", "Seeds", "Savory"], a: 2 },
+            { q: "Which mineral is Brazil Nuts especially well known for providing?", options: ["Selenium", "Iron", "Calcium", "Zinc"], a: 0 },
+            { q: "Roasted Jowar Pops and Ragi Tandoori belong to which Khari snack category?", options: ["Fruits", "Dates", "Savory", "Seeds"], a: 2 },
+            { q: "Which fruit snack is a great natural source of Vitamin C when dried?", options: ["Dried Mango Slices", "Walnut kernels", "Chia Seeds", "Zahidi Dates"], a: 0 },
+            { q: "Roasted Makhana (fox nuts) is naturally low in fat and high in which nutrient?", options: ["Protein", "Sugar", "Cholesterol", "Caffeine"], a: 0 },
+            { q: "Which Khari Makhana flavor brings a zesty, spicy South-Indian street food twist?", options: ["Mint Pudina", "Peri-Peri", "Cream & Onion", "Tandoori Tadka"], a: 1 }
+        ];
+
+        function initQuiz() {
+            const picks = [...QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 3);
+            quizState = { picks, index: 0, correct: 0, locked: false };
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const { picks, index } = quizState;
+            const item = picks[index];
+            const shuffledOptions = item.options.map((opt, i) => ({ opt, isCorrect: i === item.a }))
+                .sort(() => 0.5 - Math.random());
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-6 fade-in">
+                    <span class="text-xs font-bold text-khari-orange uppercase tracking-widest">Question ${index + 1} of ${picks.length}</span>
+                    <h2 class="text-2xl md:text-3xl font-rum text-khari-brown mt-2 max-w-xl mx-auto leading-snug">${item.q}</h2>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto w-full" id="quiz-options">
+                    ${shuffledOptions.map((o, i) => `
+                        <button class="quiz-option bg-white hover:bg-khari-cream border-2 border-khari-cream hover:border-khari-orange rounded-2xl py-4 px-4 font-bold text-khari-brown transition-all text-left"
+                            data-correct="${o.isCorrect}" onclick="answerQuiz(this)">
+                            ${o.opt}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function answerQuiz(btn) {
+            if (quizState.locked) return;
+            quizState.locked = true;
+            playClick();
+
+            const isCorrect = btn.dataset.correct === 'true';
+            document.querySelectorAll('.quiz-option').forEach(b => {
+                b.onclick = null;
+                if (b.dataset.correct === 'true') {
+                    b.classList.add('border-green-500', 'bg-green-50');
+                } else if (b === btn) {
+                    b.classList.add('border-red-400', 'bg-red-50');
+                }
+            });
+
+            if (isCorrect) quizState.correct++;
+
+            setTimeout(() => {
+                quizState.index++;
+                if (quizState.index < quizState.picks.length) {
+                    quizState.locked = false;
+                    renderQuizQuestion();
+                } else {
+                    const reward = quizState.correct * 10;
+                    if (quizState.correct === quizState.picks.length) {
+                        showResult('Snack Genius!', `Perfect score: ${quizState.correct}/${quizState.picks.length} correct.`, true, reward);
+                    } else if (quizState.correct > 0) {
+                        showResult('Nice Try!', `You got ${quizState.correct}/${quizState.picks.length} correct.`, true, reward);
+                    } else {
+                        showResult('Not This Time', `0/${quizState.picks.length} correct — give it another go later.`, false);
+                    }
+                }
+            }, 900);
+        }
+
+        /* ===================================================================
+           GAME 7: SCRATCH & WIN
+        =================================================================== */
+        function initScratch() {
+            const prizes = [10, 15, 20, 25, 40, 0, 15, 20]; // 0 = "no luck this time"
+            const reward = prizes[Math.floor(Math.random() * prizes.length)];
+            window.scratchReward = reward;
+            window.scratchRevealed = false;
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-6 fade-in">
+                    <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Scratch & Win</h2>
+                    <p class="text-khari-brown mt-2 font-semibold md:text-lg">Drag your finger or mouse across the panel to scratch it off!</p>
+                </div>
+                <div class="relative mx-auto rounded-3xl overflow-hidden shadow-card border-4 border-khari-orange" style="width: 320px; max-width: 90vw; height: 220px;">
+                    <div id="scratch-prize" class="absolute inset-0 flex flex-col items-center justify-center bg-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-khari-brown/50 mb-2">You Won</span>
+                        <span class="font-rum text-6xl ${reward > 0 ? 'text-khari-orange' : 'text-khari-brown/40'}">${reward > 0 ? reward : '0'}</span>
+                        <span class="text-xs font-bold uppercase tracking-widest text-khari-brown/50 mt-2">${reward > 0 ? 'Khari Coins' : 'Better luck next time'}</span>
+                    </div>
+                    <canvas id="scratch-canvas" width="320" height="220" class="absolute inset-0 w-full h-full cursor-pointer"></canvas>
+                </div>
+                <p class="text-center text-khari-brown/60 text-sm font-medium mt-4">Scratch at least 50% to reveal your prize</p>
+            `;
+
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 320, 220);
+            grad.addColorStop(0, '#F27B21');
+            grad.addColorStop(1, '#D96515');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 320, 220);
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.font = 'bold 18px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('✦ SCRATCH HERE ✦', 160, 115);
+
+            let isDown = false;
+            let scratchedPixels = 0;
+            const totalPixels = 320 * 220;
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+            }
+
+            function scratchAt(x, y) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 18, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function checkProgress() {
+                if (window.scratchRevealed) return;
+                const data = ctx.getImageData(0, 0, 320, 220).data;
+                let cleared = 0;
+                for (let i = 3; i < data.length; i += 4 * 20) { // sample for performance
+                    if (data[i] === 0) cleared++;
+                }
+                const ratio = cleared / (totalPixels / 20);
+                if (ratio > 0.45) revealScratch();
+            }
+
+            function revealScratch() {
+                if (window.scratchRevealed) return;
+                window.scratchRevealed = true;
+                setCooldown('scratch');
+                ctx.clearRect(0, 0, 320, 220);
+                playClick();
+                setTimeout(() => {
+                    if (reward > 0) {
+                        showResult('Scratch Winner!', `You scratched up ${reward} coins.`, true, reward);
+                    } else {
+                        showResult('No Luck This Time', 'The panel was empty — try another game!', false);
+                    }
+                }, 500);
+            }
+
+            canvas.addEventListener('mousedown', (e) => { isDown = true; const p = getPos(e); scratchAt(p.x, p.y); });
+            canvas.addEventListener('mousemove', (e) => { if (isDown) { const p = getPos(e); scratchAt(p.x, p.y); checkProgress(); } });
+            window.addEventListener('mouseup', () => { isDown = false; checkProgress(); });
+            canvas.addEventListener('touchstart', (e) => { isDown = true; const p = getPos(e); scratchAt(p.x, p.y); e.preventDefault(); }, { passive: false });
+            canvas.addEventListener('touchmove', (e) => { if (isDown) { const p = getPos(e); scratchAt(p.x, p.y); checkProgress(); } e.preventDefault(); }, { passive: false });
+            canvas.addEventListener('touchend', () => { isDown = false; checkProgress(); });
+        }
+
+        /* ===================================================================
+           GAME 8: SNACK SLOTS
+        =================================================================== */
+        const SLOT_SYMBOLS = ['🥜', '🌰', '🫘', '🍇', '⭐', '🍯'];
+        const SLOT_PAYOUTS = { 3: 75, 2: 15 }; // 3 of a kind / 2 of a kind (any pair)
+        let slotsSpinning = false;
+
+        function initSlots() {
+            slotsSpinning = false;
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-6 fade-in">
+                    <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Snack Slots</h2>
+                    <p class="text-khari-brown mt-2 font-semibold md:text-lg">Match 3 symbols for the jackpot, 2 for a bonus!</p>
+                </div>
+                <div class="flex justify-center gap-3 md:gap-4 mb-8">
+                    ${[0, 1, 2].map(i => `
+                        <div class="w-20 h-24 md:w-28 md:h-32 bg-white rounded-2xl border-4 border-khari-orange shadow-card flex items-center justify-center overflow-hidden">
+                            <span id="reel-${i}" class="text-4xl md:text-6xl select-none">🥜</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="flex justify-center">
+                    <button id="slots-btn" onclick="spinSlots()" class="khari-gradient text-white px-12 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-widest text-lg glow-pulse">
+                        Pull Lever
+                    </button>
+                </div>
+            `;
+        }
+
+        function spinSlots() {
+            if (slotsSpinning) return;
+            slotsSpinning = true;
+            playWhoosh();
+
+            const btn = document.getElementById('slots-btn');
+            btn.disabled = true;
+            btn.classList.remove('glow-pulse');
+            btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+            const finalSymbols = [0, 1, 2].map(() => SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]);
+
+            [0, 1, 2].forEach((i) => {
+                const reel = document.getElementById(`reel-${i}`);
+                let ticks = 0;
+                const maxTicks = 14 + i * 6;
+                const interval = setInterval(() => {
+                    reel.innerText = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+                    ticks++;
+                    if (ticks >= maxTicks) {
+                        clearInterval(interval);
+                        reel.innerText = finalSymbols[i];
+                        playClick();
+                        if (i === 2) {
+                            setTimeout(() => evaluateSlots(finalSymbols), 400);
+                        }
+                    }
+                }, 70);
+            });
+        }
+
+        function evaluateSlots(symbols) {
+            const counts = {};
+            symbols.forEach(s => counts[s] = (counts[s] || 0) + 1);
+            const maxCount = Math.max(...Object.values(counts));
+
+            if (maxCount === 3) {
+                showResult('JACKPOT!', `Triple match! ${symbols.join(' ')}`, true, SLOT_PAYOUTS[3]);
+            } else if (maxCount === 2) {
+                showResult('Nice Pair!', `Two matching symbols: ${symbols.join(' ')}`, true, SLOT_PAYOUTS[2]);
+            } else {
+                showResult('No Match', `${symbols.join(' ')} — no matching symbols this time.`, false);
+            }
+        }
+
+        /* ===================================================================
+           GAME 9: SNACK SCRAMBLE
+        =================================================================== */
+        let scrambleState = null;
+        let scrambleTimer;
+        let scrambleTimeLeft = 20;
+
+        function scrambleWord(word) {
+            const letters = word.replace(/\s/g, '').split('');
+            let attempts = 0;
+            let shuffled;
+            do {
+                shuffled = [...letters].sort(() => 0.5 - Math.random()).join('');
+                attempts++;
+            } while (shuffled.toUpperCase() === letters.join('').toUpperCase() && attempts < 10);
+            return shuffled;
+        }
+
+        function initScramble() {
+            const pool = productsDB.filter(p => p.name.replace(/[^a-zA-Z]/g, '').length >= 4);
+            const item = pool[Math.floor(Math.random() * pool.length)];
+            const cleanName = item.name.toUpperCase();
+            const scrambled = scrambleWord(cleanName);
+
+            scrambleState = { answer: cleanName, locked: false };
+            scrambleTimeLeft = 20;
+
+            DOM.gameContent.innerHTML = `
+                <div class="text-center mb-6 fade-in">
+                    <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Snack Scramble</h2>
+                    <p class="text-khari-brown mt-2 font-semibold md:text-lg">Unscramble the letters to name this Khari snack!</p>
+                    <div class="mt-4 flex justify-center items-center">
+                        <div class="bg-white text-khari-orange font-bold text-2xl px-5 py-2 rounded-full flex items-center border-4 border-khari-cream shadow-sm font-rum" id="scramble-timer-wrap">
+                            <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span id="scramble-timer">20</span>s
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mb-6">
+                    <div class="inline-block bg-white border-4 border-dashed border-khari-orange rounded-2xl px-6 py-4 font-rum text-2xl md:text-4xl text-khari-brown tracking-[0.2em] max-w-full break-words">
+                        ${scrambled}
+                    </div>
+                </div>
+                <div class="max-w-md mx-auto w-full">
+                    <input id="scramble-input" type="text" autocomplete="off" placeholder="Type your answer..."
+                        class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-5 py-3.5 text-khari-brown font-bold text-center text-lg outline-none mb-4"
+                        onkeydown="if(event.key==='Enter') submitScramble()">
+                    <button onclick="submitScramble()" class="khari-gradient text-white w-full py-3.5 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm">
+                        Submit Answer
+                    </button>
+                    <button onclick="revealScrambleHint()" class="mt-3 w-full text-khari-orange font-bold text-sm underline">Show first letter hint</button>
+                </div>
+            `;
+
+            document.getElementById('scramble-input').focus();
+
+            clearInterval(scrambleTimer);
+            scrambleTimer = setInterval(() => {
+                scrambleTimeLeft--;
+                const t = document.getElementById('scramble-timer');
+                if (t) t.innerText = scrambleTimeLeft;
+                if (scrambleTimeLeft <= 5) {
+                    const wrap = document.getElementById('scramble-timer-wrap');
+                    if (wrap) wrap.classList.add('text-red-500', 'animate-pulse');
+                }
+                if (scrambleTimeLeft <= 0) {
+                    clearInterval(scrambleTimer);
+                    if (scrambleState && !scrambleState.locked) {
+                        scrambleState.locked = true;
+                        showResult("Time's Up!", `The answer was "${scrambleState.answer}".`, false);
+                    }
+                }
+            }, 1000);
+        }
+
+        function revealScrambleHint() {
+            playClick();
+            const input = document.getElementById('scramble-input');
+            if (input && scrambleState) input.placeholder = `Starts with "${scrambleState.answer[0]}"...`;
+        }
+
+        function submitScramble() {
+            if (!scrambleState || scrambleState.locked) return;
+            const input = document.getElementById('scramble-input');
+            const guess = (input.value || '').toUpperCase().replace(/[^A-Z]/g, '');
+            const answerClean = scrambleState.answer.replace(/[^A-Z]/g, '');
+
+            if (!guess) return;
+
+            if (guess === answerClean) {
+                scrambleState.locked = true;
+                clearInterval(scrambleTimer);
+                const reward = scrambleTimeLeft > 12 ? 35 : scrambleTimeLeft > 5 ? 25 : 15;
+                showResult('Word Wizard!', `Correct — it was "${scrambleState.answer}".`, true, reward);
+            } else {
+                input.classList.add('shake', 'border-red-400');
+                playClick();
+                setTimeout(() => input.classList.remove('shake', 'border-red-400'), 500);
+            }
+        }
+
+        // Ensure scramble timer is cleared whenever the game modal closes
+        const _origCloseGame = closeGame;
+        closeGame = function() {
+            clearInterval(scrambleTimer);
+            scrambleState = null;
+            _origCloseGame();
+        };
+
+        /* ===================================================================
+           COUPON STORE — backed by a live Google Sheet (Simple Mode)
+           ---------------------------------------------------------------
+           HOW TO CONNECT YOUR SHEET:
+           1. Open the Khari_Coupon_Sheet.xlsx in Google Sheets (it has
+              one tab: CouponTypes, with an id/title/desc/cost/code/active
+              row per coupon).
+           2. In the Sheet: Extensions > Apps Script > paste Code.gs.
+           3. Deploy > New deployment > Web app (Execute as: Me,
+              Who has access: Anyone) > copy the /exec URL.
+           4. Paste that URL below as SHEET_API_URL.
+
+           HOW IT WORKS:
+           Each coupon type has ONE code in the Sheet. Everyone who
+           redeems that coupon today gets that same code — there's no
+           per-customer allocation, no "used"/"used at" tracking, and no
+           stock limit. To change today's code for an offer, just edit
+           its 'code' cell in the Sheet and save (or hit Refresh in the
+           app) — nothing else to update.
+
+           Leave SHEET_API_URL empty to run on the built-in offline
+           catalog + the local "offline backup code" admin panel instead.
+        =================================================================== */
+        const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyerksOdT-vBJTY1k8-6lfw8YEPucfl0ZRB5ZyolBc0wMB877JEMasoNyAwzCbbdNZXLg/exec'; // <-- paste your Apps Script /exec URL here
+        const SHEET_EDIT_URL = ''; // optional: paste your Google Sheet's normal edit URL here (for the "Open Google Sheet" button)
+
+        // Offline fallback catalog, used until/unless a Sheet is connected
+        let COUPON_CATALOG = [
+            { id: 'c10', cost: 100, title: '10% OFF', desc: 'Any order over ₹499', code: 'KHARI10' },
+            { id: 'cship', cost: 250, title: 'Free Shipping', desc: 'On your next order', code: 'KHARISHIP' },
+            { id: 'c20', cost: 400, title: '20% OFF', desc: 'Any order over ₹999', code: 'KHARI20' },
+            { id: 'cbox', cost: 700, title: 'Free Snack Box', desc: 'A surprise mini snack box', code: 'KHARIBOX' }
+        ];
+
+        let sheetConnected = false;
+
+        function isSheetConfigured() {
+            return !!SHEET_API_URL && SHEET_API_URL.indexOf('http') === 0;
+        }
+
+        async function initCouponSystem() {
+            const label = document.getElementById('sheet-status-label');
+            if (!isSheetConfigured()) {
+                sheetConnected = false;
+                if (label) label.innerText = 'Running on built-in offline coupon list';
+                renderCoupons();
+                return;
+            }
+            if (label) label.innerText = 'Syncing with Google Sheet…';
+            try {
+                const catalogRes = await fetch(`${SHEET_API_URL}?action=catalog`).then(r => r.json());
+                if (Array.isArray(catalogRes) && catalogRes.length > 0) {
+                    COUPON_CATALOG = catalogRes;
+                    sheetConnected = true;
+                    if (label) label.innerText = '🟢 Live — synced with Google Sheet';
+                } else {
+                    sheetConnected = false;
+                    if (label) label.innerText = '⚠️ Sheet returned no coupon types — showing offline list';
+                }
+            } catch (err) {
+                sheetConnected = false;
+                if (label) label.innerText = '⚠️ Could not reach Google Sheet — showing offline list';
+            }
+            renderCoupons();
+        }
+
+        async function refreshFromSheet() {
+            playClick();
+            const btn = document.getElementById('sheet-refresh-btn');
+            if (btn) btn.classList.add('opacity-60', 'pointer-events-none');
+            await initCouponSystem();
+            if (btn) btn.classList.remove('opacity-60', 'pointer-events-none');
+        }
+
+        /* ===================================================================
+           ADMIN PANEL
+           - If a Google Sheet is connected, this panel just points the
+             store owner to the Sheet (that's now the source of truth).
+           - If no Sheet is connected, it falls back to a single local
+             "offline backup code" per coupon, stored in this browser only.
+        =================================================================== */
+        const ADMIN_PIN = '2580'; // Change this PIN to whatever you like
+
+        function getOfflineCode(couponId) {
+            return localStorage.getItem(`khariCode_${couponId}`) || '';
+        }
+        function setOfflineCode(couponId, code) {
+            if (code) localStorage.setItem(`khariCode_${couponId}`, code);
+            else localStorage.removeItem(`khariCode_${couponId}`);
+        }
+
+        function openAdminGate() {
+            playClick();
+            document.getElementById('admin-pin-input').value = '';
+            document.getElementById('admin-pin-error').classList.add('hidden');
+            document.getElementById('admin-gate-container').classList.remove('hidden');
+            setTimeout(() => document.getElementById('admin-pin-input').focus(), 100);
+        }
+        function closeAdminGate() {
+            document.getElementById('admin-gate-container').classList.add('hidden');
+        }
+        function checkAdminPin() {
+            const val = document.getElementById('admin-pin-input').value;
+            if (val === ADMIN_PIN) {
+                closeAdminGate();
+                openAdminPanel();
+            } else {
+                document.getElementById('admin-pin-error').classList.remove('hidden');
+            }
+        }
+
+        function openAdminPanel() {
+            const select = document.getElementById('admin-coupon-select');
+            select.innerHTML = COUPON_CATALOG.map(c => `<option value="${c.id}">${c.title} (${c.desc})</option>`).join('');
+
+            const sheetBox = document.getElementById('admin-sheet-connected-box');
+            const modeDesc = document.getElementById('admin-mode-desc');
+            const addBtn = document.getElementById('admin-add-btn');
+            const clearBtn = document.getElementById('admin-clear-btn');
+            const textareaLabel = document.getElementById('admin-textarea-label');
+            const footerNote = document.getElementById('admin-footer-note');
+            const openLink = document.getElementById('admin-open-sheet-link');
+            const textarea = document.getElementById('admin-codes-textarea');
+
+            if (sheetConnected) {
+                sheetBox.classList.remove('hidden');
+                modeDesc.innerText = 'Your live Google Sheet is the source of truth for coupon types and codes.';
+                addBtn.classList.add('hidden');
+                clearBtn.classList.add('hidden');
+                textareaLabel.classList.add('hidden');
+                textarea.classList.add('hidden');
+                footerNote.innerText = 'Everything below is unused while the Sheet is connected. To change a code, edit the "code" cell for that row in the CouponTypes tab and save — every customer who redeems that coupon will get the new code right away.';
+                document.getElementById('admin-pool-status').classList.add('hidden');
+                if (SHEET_EDIT_URL) { openLink.href = SHEET_EDIT_URL; openLink.classList.remove('hidden'); }
+                else { openLink.classList.add('hidden'); }
+            } else {
+                sheetBox.classList.add('hidden');
+                modeDesc.innerText = 'No Google Sheet connected yet. Set one shared code per coupon below as an offline backup — everyone who redeems that coupon gets this same code, today.';
+                addBtn.classList.remove('hidden');
+                addBtn.innerText = 'Save Code';
+                clearBtn.classList.remove('hidden');
+                textareaLabel.classList.remove('hidden');
+                textareaLabel.innerText = "Today's code for this coupon";
+                textarea.classList.remove('hidden');
+                textarea.rows = 2;
+                textarea.placeholder = 'e.g. KHARI10-0701';
+                document.getElementById('admin-pool-status').classList.remove('hidden');
+                footerNote.innerText = 'How it works: this offline code lives only in this browser. Every customer who redeems this coupon while connected to this device gets this same code — no per-customer limit. For a code that you and your team can edit from anywhere, connect a Google Sheet (see the setup guide).';
+                renderAdminPoolStatus();
+            }
+
+            document.getElementById('admin-panel-container').classList.remove('hidden');
+        }
+        function closeAdminPanel() {
+            document.getElementById('admin-panel-container').classList.add('hidden');
+        }
+        function renderAdminPoolStatus() {
+            const id = document.getElementById('admin-coupon-select').value;
+            const code = getOfflineCode(id);
+            document.getElementById('admin-pool-status').innerText = code
+                ? `Current offline code: ${code}`
+                : `No offline code set yet — a generic placeholder code will be used until you set one.`;
+            document.getElementById('admin-codes-textarea').value = code;
+        }
+        function addCodesToPool() {
+            const id = document.getElementById('admin-coupon-select').value;
+            const code = document.getElementById('admin-codes-textarea').value.trim().split('\n')[0];
+            if (!code) return;
+            setOfflineCode(id, code);
+            renderAdminPoolStatus();
+            playWin();
+        }
+        function clearAdminPool() {
+            const id = document.getElementById('admin-coupon-select').value;
+            if (!confirm('Clear the offline code for this coupon?')) return;
+            setOfflineCode(id, '');
+            renderAdminPoolStatus();
+        }
+
+        function renderCoupons() {
+            const grid = document.getElementById('coupon-grid');
+            if (!grid) return;
+            grid.innerHTML = COUPON_CATALOG.map(c => {
+                const affordable = khariCoins >= c.cost;
+                return `
+                <div class="coupon-card relative bg-white rounded-2xl p-5 border-4 ${affordable ? 'border-khari-orange' : 'border-khari-cream'} shadow-sm flex flex-col items-center text-center overflow-hidden">
+                    <div class="ticket-notch -left-[11px]"></div>
+                    <div class="ticket-notch -right-[11px]"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-khari-orange mb-1">Coupon</span>
+                    <h4 class="font-rum text-2xl text-khari-brown mb-1">${c.title}</h4>
+                    <p class="text-xs text-khari-brown/70 font-medium mb-4">${c.desc}</p>
+                    <button onclick="redeemCoupon('${c.id}')" ${affordable ? '' : 'disabled'}
+                        class="mt-auto w-full py-2.5 rounded-full font-bold uppercase tracking-wider text-xs btn-bubbly transition-colors ${affordable ? 'khari-gradient text-white shadow-bubbly' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}">
+                        ${affordable ? `Redeem · ${c.cost} coins` : `Need ${c.cost - khariCoins} more`}
+                    </button>
+                </div>`;
+            }).join('');
+            pruneExpiredCoupons();
+            document.getElementById('my-coupons-count').innerText = khariCoupons.length;
+        }
+
+        function redeemCoupon(id) {
+            const c = COUPON_CATALOG.find(x => x.id === id);
+            if (!c || khariCoins < c.cost) return;
+
+            khariCoins -= c.cost;
+            localStorage.setItem('khariCoins', khariCoins);
+            DOM.coinCounter.innerText = khariCoins;
+
+            const offlineCode = !sheetConnected ? getOfflineCode(c.id) : '';
+            const code = c.code || offlineCode || `${c.id.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+            const earned = { code, title: c.title, desc: c.desc, redeemedAt: Date.now(), real: !!(sheetConnected || offlineCode) };
+            khariCoupons.unshift(earned);
+            localStorage.setItem('khariCoupons', JSON.stringify(khariCoupons));
+
+            playWin();
+            spawnConfetti(60);
+            renderCoupons();
+            updateTierBadge();
+            showCouponRedeemedModal(earned);
+        }
+
+
+        function showCouponRedeemedModal(coupon) {
+            DOM.gameContainer.classList.remove('hidden');
+            DOM.gameContent.innerHTML = `
+                <div class="text-center py-8 fade-in flex flex-col items-center justify-center h-full">
+                    <svg class="w-20 h-20 text-khari-orange mx-auto mb-4 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h2 class="text-4xl md:text-5xl font-rum text-khari-orange mb-3">Coupon Unlocked!</h2>
+                    <p class="text-xl text-khari-brown font-bold mb-1">${coupon.title}</p>
+                    <p class="text-khari-brown/70 mb-5 font-medium">${coupon.desc}</p>
+                    <div onclick="copyCouponCode('${coupon.code}')" class="cursor-pointer bg-khari-cream border-2 border-dashed border-khari-orange px-6 py-3 rounded-xl text-khari-orange font-bold tracking-wider text-lg mb-2 hover:bg-white transition-colors">
+                        ${coupon.code}
+                    </div>
+                    <p class="text-xs ${coupon.real ? 'text-green-600/80' : 'text-khari-brown/40'} font-bold mb-1">${coupon.real ? '✓ Verified code from store inventory' : 'Demo code — connect a Sheet/pool for real codes'}</p>
+                    <p class="text-xs text-khari-brown/50 mb-8">Tap the code to copy</p>
+                    <button onclick="closeGame()" class="khari-gradient text-white px-12 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-widest text-lg w-full md:w-auto">
+                        Got It
+                    </button>
+                </div>
+            `;
+        }
+
+        function copyCouponCode(code) {
+            playClick();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).catch(() => {});
+            }
+        }
+
+        function openCouponWallet() {
+            playClick();
+            renderWalletList();
+            document.getElementById('wallet-container').classList.remove('hidden');
+        }
+        function closeCouponWallet() {
+            document.getElementById('wallet-container').classList.add('hidden');
+        }
+        function renderWalletList() {
+            pruneExpiredCoupons();
+            const list = document.getElementById('wallet-list');
+            if (khariCoupons.length === 0) {
+                list.innerHTML = `<p class="text-center text-khari-brown/60 font-medium py-10">No coupons yet — play games and redeem from the Coupon Store!<br><span class="text-xs">Redeemed coupons stay here for 2 days.</span></p>`;
+                return;
+            }
+            list.innerHTML = khariCoupons.map(c => {
+                const msLeft = COUPON_VALID_MS - (Date.now() - (c.redeemedAt || 0));
+                const hoursLeft = Math.max(0, Math.floor(msLeft / (60 * 60 * 1000)));
+                const minsLeft = Math.max(0, Math.floor((msLeft % (60 * 60 * 1000)) / (60 * 1000)));
+                const expiryText = hoursLeft >= 1 ? `Expires in ${hoursLeft}h ${minsLeft}m` : `Expires in ${minsLeft}m`;
+                return `
+                <div onclick="copyCouponCode('${c.code}')" class="cursor-pointer bg-white border-2 border-khari-cream hover:border-khari-orange rounded-2xl p-4 flex justify-between items-center transition-colors">
+                    <div class="text-left">
+                        <p class="font-rum text-lg text-khari-brown leading-tight">${c.title}</p>
+                        <p class="text-xs text-khari-brown/60 font-medium">${c.desc}</p>
+                        <p class="text-[10px] text-khari-orange/80 font-bold uppercase tracking-wider mt-1">${expiryText}</p>
+                    </div>
+                    <div class="bg-khari-cream border border-dashed border-khari-orange px-3 py-1.5 rounded-lg text-khari-orange font-bold text-sm tracking-wider whitespace-nowrap ml-3">
+                        ${c.code}
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // Initial load: tries the connected Google Sheet first, falls back to offline catalog
+        initCouponSystem();
+    </script>
+</body>
+</html>
