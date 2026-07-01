@@ -378,6 +378,12 @@
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <!-- Music Toggle -->
+                <button id="music-toggle" onclick="toggleMusic()" class="sound-btn bg-khari-cream hover:bg-white text-khari-brown border-2 border-khari-orange/40 rounded-full w-10 h-10 flex items-center justify-center transition-colors" aria-label="Toggle music">
+                    <svg id="music-icon-on" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <svg id="music-icon-off" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20"></path></svg>
+                </button>
+
                 <!-- Sound Toggle -->
                 <button id="sound-toggle" onclick="toggleSound()" class="sound-btn bg-khari-cream hover:bg-white text-khari-brown border-2 border-khari-orange/40 rounded-full w-10 h-10 flex items-center justify-center transition-colors" aria-label="Toggle sound">
                     <svg id="sound-icon-on" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 5a9 9 0 010 14M15.5 8.5a4.5 4.5 0 010 7"></path></svg>
@@ -426,13 +432,13 @@
             </div>
 
             <!-- Game 3: Fortune Flip -->
-            <div class="bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('fortune')">
+            <div id="game-card-fortune" class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('fortune')">
                 <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:scale-110 transition-transform">
                     <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
                 <h3 class="text-2xl font-rum text-khari-brown mb-2">Fortune Flip</h3>
-                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Pick a lucky card for an instant reward or discount.</p>
-                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Test Your Luck</button>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Pick a lucky card for an instant coin reward.</p>
+                <button id="fortune-card-btn" class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Test Your Luck</button>
             </div>
 
             <!-- Game 4: Spin the Wheel (NEW) -->
@@ -480,14 +486,14 @@
             </div>
 
             <!-- Game 8: Snack Slots (NEW) -->
-            <div class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('slots')">
+            <div id="game-card-slots" class="relative bg-white rounded-[32px] shadow-card hover:shadow-bubbly p-6 md:p-8 flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-2 transition-all duration-300 border-4 border-khari-cream group" onclick="startGame('slots')">
                 <span class="absolute -top-3 -right-2 bg-khari-yellow text-khari-brown text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md rotate-6">New!</span>
                 <div class="w-24 h-24 bg-khari-cream rounded-full flex items-center justify-center mb-6 border-2 border-khari-orange border-dashed group-hover:rotate-12 transition-transform">
                     <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-width="2"></rect><path stroke-linecap="round" stroke-width="2" d="M8 4v16M16 4v16M3 9h18M3 15h18"></path></svg>
                 </div>
                 <h3 class="text-2xl font-rum text-khari-brown mb-2">Snack Slots</h3>
-                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Match 3 snacks in a row for a big coin payout.</p>
-                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 75 Coins</button>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">3 pulls per round. Match 3 snacks in a row for a big coin payout.</p>
+                <button id="slots-card-btn" class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 75 Coins</button>
             </div>
 
             <!-- Game 9: Word Scramble (NEW) -->
@@ -499,6 +505,19 @@
                 <h3 class="text-2xl font-rum text-khari-brown mb-2">Snack Scramble</h3>
                 <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">Unscramble the jumbled snack name before time runs out.</p>
                 <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 35 Coins</button>
+            </div>
+        </div>
+
+        <!-- ============ OUR PLAYERS (hidden easter egg — reached only via footer) ============ -->
+        <div class="mt-16 md:mt-20 hidden" id="products-shop">
+            <div class="text-center mb-8 fade-in">
+                <span class="inline-block bg-khari-orange/10 text-khari-orange font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 border border-khari-orange/30">Meet The Roster</span>
+                <h2 class="text-3xl md:text-5xl font-rum text-khari-brown mb-3">Our Players</h2>
+                <p class="text-base md:text-lg font-medium text-khari-brown opacity-80 max-w-2xl mx-auto">Every snack brings its own superpower. Tap a player card to see where to buy it.</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5" id="products-grid">
+                <!-- Player cards injected by JS -->
             </div>
         </div>
 
@@ -544,66 +563,17 @@
     <footer class="relative z-10 text-center py-6 text-xs text-khari-brown/50 font-medium">
         Khari Foods Arcade &mdash; Feel Good Snacking
         <span class="block mt-1">
-            <button onclick="openAdminGate()" class="text-khari-brown/30 hover:text-khari-orange underline-offset-2 hover:underline text-[10px] tracking-wide">Store Admin</button>
+            <button onclick="revealOurPlayers()" class="text-khari-brown/30 hover:text-khari-orange underline-offset-2 hover:underline text-[10px] tracking-wide">Our Players</button>
         </span>
     </footer>
 
-    <!-- ============ Admin Gate (PIN entry) ============ -->
-    <div id="admin-gate-container" class="hidden fixed inset-0 z-[120] flex items-center justify-center modal-overlay p-4">
-        <div class="bg-khari-cream rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden pop-in relative border-8 border-white p-6 md:p-8 text-center">
-            <button onclick="closeAdminGate()" class="absolute top-3 right-3 text-khari-brown hover:text-khari-orange bg-white shadow-md rounded-full p-2 transition-colors border-2 border-khari-cream">
+    <!-- ============ Product Detail Box (opens on player card click) ============ -->
+    <div id="product-detail-container" class="hidden fixed inset-0 z-[120] flex items-center justify-center modal-overlay p-4">
+        <div class="bg-khari-cream rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden pop-in relative border-8 border-white p-6 md:p-8 text-center max-h-[90vh] overflow-y-auto no-scrollbar">
+            <button onclick="closeProductDetail()" class="absolute top-3 right-3 text-khari-brown hover:text-khari-orange bg-white shadow-md rounded-full p-2 transition-colors border-2 border-khari-cream z-10">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <h3 class="text-2xl font-rum text-khari-orange mb-2">Store Admin</h3>
-            <p class="text-sm text-khari-brown/70 font-medium mb-5">Enter the admin PIN to manage real coupon codes.</p>
-            <input id="admin-pin-input" type="password" inputmode="numeric" placeholder="Admin PIN"
-                class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-5 py-3 text-khari-brown font-bold text-center text-lg outline-none mb-3 bg-white"
-                onkeydown="if(event.key==='Enter') checkAdminPin()">
-            <p id="admin-pin-error" class="hidden text-red-500 text-xs font-bold mb-3">Incorrect PIN, try again.</p>
-            <button onclick="checkAdminPin()" class="khari-gradient text-white w-full py-3 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm">
-                Unlock
-            </button>
-        </div>
-    </div>
-
-    <!-- ============ Admin Panel (manage real coupon code pools) ============ -->
-    <div id="admin-panel-container" class="hidden fixed inset-0 z-[120] flex items-center justify-center modal-overlay p-4">
-        <div class="bg-khari-cream rounded-[32px] shadow-2xl w-full max-w-xl overflow-hidden pop-in relative border-8 border-white flex flex-col max-h-[90vh]">
-            <button onclick="closeAdminPanel()" class="absolute top-3 right-3 text-khari-brown hover:text-khari-orange bg-white shadow-md rounded-full p-2 transition-colors z-50 border-2 border-khari-cream">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <div class="p-6 md:p-8 overflow-y-auto no-scrollbar">
-                <h3 class="text-3xl font-rum text-khari-orange mb-1 text-center">Coupon Code Manager</h3>
-                <p id="admin-mode-desc" class="text-sm text-khari-brown/70 font-medium text-center mb-6"></p>
-
-                <div id="admin-sheet-connected-box" class="hidden bg-white border-2 border-khari-orange rounded-2xl p-5 mb-4 text-left">
-                    <p class="text-sm font-bold text-khari-brown mb-2">✅ Live Google Sheet connected</p>
-                    <p class="text-xs text-khari-brown/70 font-medium leading-relaxed mb-3">Coupon types and codes are managed entirely in your Google Sheet now. Open it any time to add codes or change pricing — no need to edit this app.</p>
-                    <a id="admin-open-sheet-link" href="#" target="_blank" rel="noopener" class="hidden khari-gradient text-white inline-block px-5 py-2.5 rounded-full font-bold uppercase tracking-wider text-xs shadow-bubbly btn-bubbly">Open Google Sheet</a>
-                    <button onclick="refreshFromSheet()" class="bg-white text-khari-orange border-2 border-khari-orange inline-block px-5 py-2.5 rounded-full font-bold uppercase tracking-wider text-xs ml-2">Refresh Now</button>
-                </div>
-
-                <label class="block text-xs font-bold uppercase tracking-widest text-khari-brown/60 mb-2">Coupon Type</label>
-                <select id="admin-coupon-select" onchange="renderAdminPoolStatus()" class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-4 py-3 text-khari-brown font-bold outline-none mb-4 bg-white"></select>
-
-                <div id="admin-pool-status" class="bg-white border-2 border-khari-cream rounded-2xl px-4 py-3 mb-4 text-sm font-bold text-khari-brown"></div>
-
-                <label class="block text-xs font-bold uppercase tracking-widest text-khari-brown/60 mb-2" id="admin-textarea-label">Paste codes (one per line)</label>
-                <textarea id="admin-codes-textarea" rows="6" placeholder="KHARI10-A1B2&#10;KHARI10-C3D4&#10;KHARI10-E5F6" class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-4 py-3 text-khari-brown font-medium outline-none mb-4 bg-white"></textarea>
-
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button onclick="addCodesToPool()" id="admin-add-btn" class="khari-gradient text-white flex-1 py-3 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm">
-                        Add Codes to Pool
-                    </button>
-                    <button onclick="clearAdminPool()" id="admin-clear-btn" class="bg-white text-khari-orange border-2 border-khari-orange flex-1 py-3 rounded-full font-bold uppercase tracking-wider text-sm hover:bg-khari-cream transition-colors">
-                        Clear Pool
-                    </button>
-                </div>
-
-                <div class="mt-6 pt-5 border-t-2 border-khari-cream/80">
-                    <p class="text-xs text-khari-brown/50 font-medium leading-relaxed" id="admin-footer-note"></p>
-                </div>
-            </div>
+            <div id="product-detail-content"></div>
         </div>
     </div>
 
@@ -614,7 +584,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             
-            <div id="game-content" class="p-6 md:p-10 flex-grow overflow-y-auto no-scrollbar flex flex-col justify-center min-h-[400px]">
+            <div id="game-content" class="p-6 md:p-10 flex-grow overflow-y-auto no-scrollbar flex flex-col justify-[safe_center] min-h-[400px]">
                 <!-- Dynamic Game Content Injected Here -->
             </div>
         </div>
@@ -649,42 +619,119 @@
         const GITHUB_BASE = "https://raw.githubusercontent.com/kharifoods/Khari-Play/main/";
 
         // Complete Product Database based on provided filenames
+        // Each player (product) gets its own unique "superpower" — its standout health benefit.
         const productsDB = [
-            { name: 'Ajwa Dates', category: 'Dates', file: 'Ajwa Dates.png' },
-            { name: 'Black Afghan Dates', category: 'Dates', file: 'Black Afghan Dates.png' },
-            { name: 'Dates Medjool', category: 'Dates', file: 'Dates Medjool.png' },
-            { name: 'Kimia Gold Dates', category: 'Dates', file: 'Kimia Gold Dates.png' },
-            { name: 'Zahidi Dates', category: 'Dates', file: 'Zahidi Dates.png' },
+            { name: 'Ajwa Dates', category: 'Dates', file: 'Ajwa Dates.png', power: 'Iron & Stamina Boost' },
+            { name: 'Black Afghan Dates', category: 'Dates', file: 'Black Afghan Dates.png', power: 'Rich Mineral Power' },
+            { name: 'Black Afghan Seedless Dates', category: 'Dates', file: 'Black Afghan Seedless Dates.png', power: 'Seedless Sweet Energy' },
+            { name: 'Black Seedless Royal Dates', category: 'Dates', file: 'Black seedless royal dates.png', power: 'Royal Energy Blend' },
+            { name: 'Dates Medjool', category: 'Dates', file: 'Dates Medjool.png', power: 'Instant Energy Surge' },
+            { name: 'Kalmi Dates', category: 'Dates', file: 'Kalmi Dates.png', power: 'Classic Energy Chew' },
+            { name: 'Kimia Gold Dates', category: 'Dates', file: 'Kimia Gold Dates.png', power: 'Natural Sweet Fuel' },
+            { name: 'Zahidi Dates', category: 'Dates', file: 'Zahidi Dates.png', power: 'Fiber-Rich Digestion' },
             
-            { name: 'Dried BlueBerries', category: 'Fruits', file: 'Dried BlueBerries.png' },
-            { name: 'Dried Cherries', category: 'Fruits', file: 'Dried Cherries.png' },
-            { name: 'Dried Kiwi', category: 'Fruits', file: 'Dried Kiwi.png' },
-            { name: 'Dried Mango Slices', category: 'Fruits', file: 'Dried Mango Slices.png' },
-            { name: 'Dried Strawberries', category: 'Fruits', file: 'Dried Strawberries.png' },
+            { name: 'Afghan Anjeer', category: 'Fruits', file: 'Afghan Anjeer.png', power: 'Iron & Bone Support' },
+            { name: 'Black Afghan Raisin', category: 'Fruits', file: 'Black Afghan raisin.png', power: 'Iron-Rich Sweetness' },
+            { name: 'Green Raisins', category: 'Fruits', file: 'Green Raisins.png', power: 'Quick Energy Bites' },
+            { name: 'Dried & Pitted Prunes', category: 'Fruits', file: 'Dried & Pitted Prunes.png', power: 'Gut Health Booster' },
+            { name: 'Dried Apricots', category: 'Fruits', file: 'Dried Apricots.png', power: 'Vitamin A Glow' },
+            { name: 'Dried BlueBerries', category: 'Fruits', file: 'Dried BlueBerries.png', power: 'Antioxidant Shield' },
+            { name: 'Dried Cherries', category: 'Fruits', file: 'Dried Cherries.png', power: 'Recovery & Sleep Aid' },
+            { name: 'Dried Kiwi', category: 'Fruits', file: 'Dried Kiwi.png', power: 'Vitamin C Surge' },
+            { name: 'Dried Mango Slices', category: 'Fruits', file: 'Dried Mango Slices.png', power: 'Eye Health Boost' },
+            { name: 'Dried Strawberries', category: 'Fruits', file: 'Dried Strawberries.png', power: 'Skin Glow Power' },
             
-            { name: 'Chia Seeds', category: 'Seeds', file: 'Chia Seeds.png' },
-            { name: 'Pumpkin Seeds', category: 'Seeds', file: 'Pumpkin Seeds.png' },
-            { name: 'Raw Flex Seeds', category: 'Seeds', file: 'Raw Flex Seeds.png' },
-            { name: 'sunflower seeds', category: 'Seeds', file: 'sunflower seeds.png' },
+            { name: 'Chia Seeds', category: 'Seeds', file: 'Chia Seeds.png', power: 'Omega-3 Powerhouse' },
+            { name: 'Pumpkin Seeds', category: 'Seeds', file: 'Pumpkin Seeds.png', power: 'Zinc & Immunity' },
+            { name: 'Raw Flex Seeds', category: 'Seeds', file: 'Raw Flex Seeds.png', power: 'Heart Health Hero' },
+            { name: 'sunflower seeds', category: 'Seeds', file: 'sunflower seeds.png', power: 'Vitamin E Energy' },
             
-            { name: 'Brazil Nuts', category: 'Nuts', file: 'Brazil Nuts.png' },
-            { name: 'Pecan Nuts', category: 'Nuts', file: 'Pecan Nuts.png' },
-            { name: 'Pistachios', category: 'Nuts', file: 'Pistachios.png' },
-            { name: 'Walnut kernels', category: 'Nuts', file: 'Walnut kernels.png' },
+            { name: 'Brazil Nuts', category: 'Nuts', file: 'Brazil Nuts.png', power: 'Selenium Super Boost' },
+            { name: 'Pecan Nuts', category: 'Nuts', file: 'Pecan Nuts.png', power: 'Good Fats Booster' },
+            { name: 'Pistachios', category: 'Nuts', file: 'Pistachios.png', power: 'Protein & Focus' },
+            { name: 'Walnut kernels', category: 'Nuts', file: 'Walnut kernels.png', power: 'Brain Power Fuel' },
             
-            { name: 'Beetroot Peri Peri', category: 'Savory', file: 'Beetroot Peri Peri.png' },
-            { name: 'Jowar Pops Cheesy Tomato', category: 'Savory', file: 'Jowar Pops Cheesy Tomato.png' },
-            { name: 'Oats masala', category: 'Savory', file: 'Oats masala.png' },
-            { name: 'Ragi Tandoori', category: 'Savory', file: 'Ragi Tandoori.png' },
+            { name: 'Beetroot Peri Peri', category: 'Savory', file: 'Beetroot Peri Peri.png', power: 'Guilt-Free Crunch' },
+            { name: 'Jowar Pops Cheesy Tomato', category: 'Savory', file: 'Jowar Pops Cheesy Tomato.png', power: 'Whole-Grain Crunch' },
+            { name: 'Jowar Pops Cream & Onion', category: 'Savory', file: 'Jowar Pops Cream & Onion.png', power: 'Whole-Grain Zing' },
+            { name: 'Oats masala', category: 'Savory', file: 'Oats masala.png', power: 'Steady Energy Release' },
+            { name: 'Ragi Tandoori', category: 'Savory', file: 'Ragi Tandoori.png', power: 'Calcium & Crunch' },
 
-            { name: 'Roasted Makhana Cream & Onion', category: 'Makhana', file: 'Roasted Makhana Cream & Onion.png' },
-            { name: 'Roasted Makhana Mint Pudina', category: 'Makhana', file: 'Roasted Makhana Mint Pudina.png' },
-            { name: 'Roasted Makhana Peri-Peri', category: 'Makhana', file: 'Roasted Makhana Peri-Peri.png' },
-            { name: 'Roasted Makhana Tandoori Tadka', category: 'Makhana', file: 'Roasted Makhana Tandoori Tadka.png' }
+            { name: 'Phool Makhana', category: 'Makhana', file: 'Phool Makhana.png', power: 'Pure Roasted Crunch' },
+            { name: 'Roasted Makhana Cream & Onion', category: 'Makhana', file: 'Roasted Makhana Cream & Onion.png', power: 'Light & Filling' },
+            { name: 'Roasted Makhana Mint Pudina', category: 'Makhana', file: 'Roasted Makhana Mint Pudina.png', power: 'Cooling Digest Aid' },
+            { name: 'Roasted Makhana Peri-Peri', category: 'Makhana', file: 'Roasted Makhana Peri-Peri.png', power: 'Low-Cal Crunch Hit' },
+            { name: 'Roasted Makhana Tandoori Tadka', category: 'Makhana', file: 'Roasted Makhana Tandoori Tadka.png', power: 'Protein-Rich Snacking' },
+
+            { name: 'Mini Snackbar - Dates & Nuts', category: 'Bars', file: 'Mini Snackbar - Dates & Nuts.png', power: 'On-the-Go Fuel' },
+            { name: 'Mini Snackbar - Honey & Fruits', category: 'Bars', file: 'Mini Snackbar - Honey & fruits.png', power: 'Honey Energy Bar' },
+            { name: 'Packet of 5 Mini Snackbar - Dates & Nuts', category: 'Bars', file: 'Packet of 5 Mini Snackbar - Dates & Nuts.png', power: 'Bulk Energy Pack' },
+            { name: 'Packet of 5 Mini Snackbar - Honey & Fruits', category: 'Bars', file: 'Packet of 5 Mini Snackbar - Honey & fruits.png', power: 'Family Fuel Pack' },
+
+            { name: 'Snack Mix - Dried Fruit Fun', category: 'Mixes', file: 'Snack Mix - Dried Fruit Fun.png', power: 'Fruity Trail Mix' },
+            { name: 'Snack Mixes - Daily Snack Mix', category: 'Mixes', file: 'Snack Mixes - Daily Snack Mix.png', power: 'Everyday Balanced Mix' },
+            { name: 'Snack Mixes - Dried Berries Mix', category: 'Mixes', file: 'Snack Mixes - Dried Berries Mix.png', power: 'Berry Antioxidant Mix' }
         ];
 
         // Helper to construct image URL securely
         const getImageUrl = (filename) => `${GITHUB_BASE}${encodeURIComponent(filename)}`;
+
+        /* ===================================================================
+           OUR PLAYERS — each snack is a "player" with its own superpower.
+           Tapping a player card opens a box with that snack's buy links.
+           Replace the URL builders below with your real storefront links.
+        =================================================================== */
+        // TODO: point these at your real storefront search/product URLs
+        const BUY_PLATFORMS = [
+            { key: 'zepto',    label: 'Zepto',           url: (n) => `https://www.zeptonow.com/search?query=${encodeURIComponent(n)}` },
+            { key: 'blinkit',  label: 'Blinkit',         url: (n) => `https://blinkit.com/s/?q=${encodeURIComponent(n)}` },
+            { key: 'instamart',label: 'Swiggy Instamart',url: (n) => `https://www.swiggy.com/instamart/search?custom_back=true&query=${encodeURIComponent(n)}` },
+            { key: 'bigbasket',label: 'BigBasket',       url: (n) => `https://www.bigbasket.com/ps/?q=${encodeURIComponent(n)}` }
+        ];
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            if (!grid) return;
+            grid.innerHTML = productsDB.map((p, i) => {
+                const imgUrl = getImageUrl(p.file);
+                return `
+                <div class="relative bg-white rounded-2xl p-4 border-4 border-khari-cream hover:border-khari-orange shadow-sm flex flex-col items-center text-center transition-all cursor-pointer group" onclick="openProductDetail(${i})">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-khari-orange/70 mb-1">${p.category}</span>
+                    <div class="h-16 w-16 md:h-20 md:w-20 mb-2 flex items-center justify-center">
+                        <img src="${imgUrl}" alt="${p.name}" class="game-item-img max-h-full max-w-full object-contain drop-shadow-sm" onerror="this.src='https://placehold.co/200x200/FCF7F2/F27B21?text=Khari+Foods'">
+                    </div>
+                    <h4 class="font-bold text-khari-brown text-xs md:text-sm leading-tight mb-2 line-clamp-2">${p.name}</h4>
+                    <span class="inline-block bg-khari-cream text-khari-orange text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3">⚡ ${p.power}</span>
+                    <button class="w-full mt-auto khari-gradient text-white text-[11px] font-bold uppercase tracking-wider py-2 rounded-full shadow-bubbly btn-bubbly">View Player</button>
+                </div>`;
+            }).join('');
+        }
+
+        function openProductDetail(i) {
+            playClick();
+            const p = productsDB[i];
+            if (!p) return;
+            const imgUrl = getImageUrl(p.file);
+            document.getElementById('product-detail-content').innerHTML = `
+                <span class="text-[10px] font-bold uppercase tracking-widest text-khari-orange/70 mb-2 block">${p.category}</span>
+                <div class="h-32 w-32 mx-auto mb-3 flex items-center justify-center">
+                    <img src="${imgUrl}" alt="${p.name}" class="max-h-full max-w-full object-contain drop-shadow-md" onerror="this.src='https://placehold.co/200x200/FCF7F2/F27B21?text=Khari+Foods'">
+                </div>
+                <h3 class="font-rum text-2xl text-khari-brown mb-2 leading-tight">${p.name}</h3>
+                <span class="inline-block bg-khari-orange/10 text-khari-orange text-xs font-bold uppercase tracking-wide px-4 py-1.5 rounded-full mb-6 border border-khari-orange/30">⚡ Superpower: ${p.power}</span>
+                <p class="text-xs font-bold uppercase tracking-widest text-khari-brown/50 mb-3">Buy this player on</p>
+                <div class="flex flex-col gap-2.5">
+                    ${BUY_PLATFORMS.map(platform => `
+                        <a href="${platform.url(p.name)}" target="_blank" rel="noopener" class="khari-gradient text-white text-sm font-bold uppercase tracking-wider py-3 rounded-full shadow-bubbly btn-bubbly">${platform.label}</a>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('product-detail-container').classList.remove('hidden');
+        }
+
+        function closeProductDetail() {
+            document.getElementById('product-detail-container').classList.add('hidden');
+        }
 
         /* ===================================================================
            LOGIN + IMAGE PRELOADER
@@ -770,6 +817,8 @@
                     localStorage.setItem('khariPlayerMobile', mobile);
                 } catch (err) {}
 
+                if (musicOn) startBackgroundMusic();
+
                 loginScreen.style.transition = 'opacity 0.4s ease';
                 loginScreen.style.opacity = '0';
                 setTimeout(() => {
@@ -781,6 +830,7 @@
 
         // Initialize UI
         document.getElementById('coin-counter').innerText = khariCoins;
+        renderProducts();
 
         const DOM = {
             gameContainer: document.getElementById('game-container'),
@@ -830,6 +880,59 @@
         (function initSoundIcon() {
             document.getElementById('sound-icon-on').classList.toggle('hidden', !soundOn);
             document.getElementById('sound-icon-off').classList.toggle('hidden', soundOn);
+        })();
+
+        /* ===================== BACKGROUND MUSIC (WebAudio, no assets needed) =====================
+           A gentle looping pentatonic tune, independent from the Sound (SFX) toggle above.
+           Starts the first time the person taps "Start Playing" (a real user gesture is
+           required before browsers allow audio to play).
+        =================================================================== */
+        let musicOn = localStorage.getItem('khariMusicOn') !== 'off';
+        let musicTimer = null;
+        let musicStep = 0;
+        const MUSIC_PATTERN = [523.25, null, 659.25, 587.33, null, 783.99, 659.25, null, 880.00, 783.99, null, 659.25, 587.33, null, 523.25, null];
+
+        function playMusicNote(freq) {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            const t0 = ctx.currentTime;
+            gain.gain.setValueAtTime(0.0001, t0);
+            gain.gain.linearRampToValueAtTime(0.035, t0 + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.4);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(t0);
+            osc.stop(t0 + 0.45);
+        }
+
+        function startBackgroundMusic() {
+            if (!musicOn || musicTimer) return;
+            const ctx = getAudioCtx();
+            if (ctx && ctx.state === 'suspended') ctx.resume();
+            musicTimer = setInterval(() => {
+                const freq = MUSIC_PATTERN[musicStep % MUSIC_PATTERN.length];
+                if (freq) playMusicNote(freq);
+                musicStep++;
+            }, 380);
+        }
+
+        function stopBackgroundMusic() {
+            if (musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+        }
+
+        function toggleMusic() {
+            musicOn = !musicOn;
+            localStorage.setItem('khariMusicOn', musicOn ? 'on' : 'off');
+            document.getElementById('music-icon-on').classList.toggle('hidden', !musicOn);
+            document.getElementById('music-icon-off').classList.toggle('hidden', musicOn);
+            if (musicOn) { startBackgroundMusic(); } else { stopBackgroundMusic(); }
+        }
+        (function initMusicIcon() {
+            document.getElementById('music-icon-on').classList.toggle('hidden', !musicOn);
+            document.getElementById('music-icon-off').classList.toggle('hidden', musicOn);
         })();
 
         /* ===================== CONFETTI ===================== */
@@ -902,7 +1005,7 @@
         =================================================================== */
         const NON_EFFORT_COOLDOWN_MS = 2 * 60 * 1000;
         let khariCooldowns = JSON.parse(localStorage.getItem('khariCooldowns') || '{}');
-        const COOLDOWN_LABELS = { spin: 'Spin Now', scratch: 'Earn up to 40 Coins' };
+        const COOLDOWN_LABELS = { spin: 'Spin Now', scratch: 'Earn up to 40 Coins', fortune: 'Test Your Luck', slots: 'Earn up to 75 Coins' };
 
         function setCooldown(key) {
             khariCooldowns[key] = Date.now() + NON_EFFORT_COOLDOWN_MS;
@@ -971,7 +1074,7 @@
         }
 
         function startGame(gameType) {
-            if ((gameType === 'spin' || gameType === 'scratch') && isOnCooldown(gameType)) {
+            if ((gameType === 'spin' || gameType === 'scratch' || gameType === 'fortune' || gameType === 'slots') && isOnCooldown(gameType)) {
                 playClick();
                 return;
             }
@@ -1152,16 +1255,17 @@
         }
 
         function initFortune() {
+            // Coins-only prizes (no coupon codes) — shuffled across the 3 cards each round
             const prizes = [
-                { title: "Healthy Habit!", text: "15% OFF next order.", code: "HABIT15" },
-                { title: "Seed Surprise!", text: "Free Pumpkin Seeds.", code: "FREESEED" },
-                { title: "Lucky Day!", text: "Buy 1 Get 1 Snack Mix.", code: "BOGO1" }
+                { title: "Healthy Habit!", coins: 20 },
+                { title: "Seed Surprise!", coins: 35 },
+                { title: "Lucky Day!", coins: 50 }
             ].sort(() => 0.5 - Math.random());
 
             DOM.gameContent.innerHTML = `
                 <div class="text-center mb-10 fade-in">
                     <h2 class="text-4xl md:text-5xl font-rum text-khari-orange">The Fortune Flip</h2>
-                    <p class="text-khari-brown mt-2 font-semibold text-lg">Pick one card for an instant sweet reward!</p>
+                    <p class="text-khari-brown mt-2 font-semibold text-lg">Pick one card for an instant coin reward!</p>
                 </div>
                 <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-8 perspective-1000">
                     ${[0, 1, 2].map(i => `
@@ -1196,14 +1300,15 @@
         function flipCard(index) {
             if (window.cardFlipped) return;
             window.cardFlipped = true;
+            setCooldown('fortune');
             playWhoosh();
 
             const card = document.getElementById(`card-${index}`);
             const prize = window.currentPrizes[index];
             
             document.getElementById(`prize-title-${index}`).innerText = prize.title;
-            document.getElementById(`prize-text-${index}`).innerText = prize.text;
-            document.getElementById(`prize-code-${index}`).innerText = prize.code;
+            document.getElementById(`prize-text-${index}`).innerText = `+${prize.coins} Khari Coins`;
+            document.getElementById(`prize-code-${index}`).innerText = `${prize.coins} COINS`;
             
             card.classList.add('flipped');
 
@@ -1219,7 +1324,7 @@
 
             // Reward sequence
             setTimeout(() => {
-                addCoins(50); // Bonus for playing
+                addCoins(prize.coins);
                 setTimeout(() => {
                     playWin();
                     spawnConfetti(70);
@@ -1230,9 +1335,9 @@
                                 <span class="absolute top-0 right-0 animate-ping h-4 w-4 rounded-full bg-khari-yellow opacity-75"></span>
                             </div>
                             <h2 class="text-5xl font-rum text-khari-orange mb-2">You Won!</h2>
-                            <p class="text-2xl text-khari-brown font-bold mb-2">${prize.text}</p>
-                            <p class="text-khari-brown/70 mb-6 font-medium">Use code <span class="text-khari-orange font-bold border-b-2 border-dashed border-khari-orange">${prize.code}</span> at checkout.</p>
-                            <p class="text-sm font-bold text-khari-yellow bg-white px-4 py-2 rounded-full shadow-sm mb-8">+50 Bonus Coins Added!</p>
+                            <p class="text-2xl text-khari-brown font-bold mb-2">${prize.title}</p>
+                            <p class="text-sm font-bold text-khari-yellow bg-white px-4 py-2 rounded-full shadow-sm mb-8">+${prize.coins} Khari Coins Added!</p>
+                            <p class="text-xs text-khari-brown/50 font-medium mb-6">Fortune Flip is locked for 2 minutes — come back soon!</p>
                             <button onclick="closeGame()" class="khari-gradient text-white px-12 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-widest text-lg">
                                 Claim Reward
                             </button>
@@ -1612,22 +1717,35 @@
         =================================================================== */
         const SLOT_SYMBOLS = ['🥜', '🌰', '🫘', '🍇', '⭐', '🍯'];
         const SLOT_PAYOUTS = { 3: 75, 2: 15 }; // 3 of a kind / 2 of a kind (any pair)
+        const SLOTS_MAX_PULLS = 3;
         let slotsSpinning = false;
+        let slotsPullsLeft = SLOTS_MAX_PULLS;
+        let slotsTotalWon = 0;
 
         function initSlots() {
             slotsSpinning = false;
+            slotsPullsLeft = SLOTS_MAX_PULLS;
+            slotsTotalWon = 0;
+            renderSlotsScreen();
+        }
+
+        function renderSlotsScreen() {
             DOM.gameContent.innerHTML = `
                 <div class="text-center mb-6 fade-in">
                     <h2 class="text-3xl md:text-5xl font-rum text-khari-orange">Snack Slots</h2>
                     <p class="text-khari-brown mt-2 font-semibold md:text-lg">Match 3 symbols for the jackpot, 2 for a bonus!</p>
+                    <div class="mt-4 flex justify-center items-center">
+                        <span class="bg-white text-khari-orange font-bold text-sm px-4 py-1.5 rounded-full border-2 border-khari-cream shadow-sm uppercase tracking-wider" id="slots-pulls-left">${slotsPullsLeft} pulls left</span>
+                    </div>
                 </div>
-                <div class="flex justify-center gap-3 md:gap-4 mb-8">
+                <div class="flex justify-center gap-3 md:gap-4 mb-4">
                     ${[0, 1, 2].map(i => `
                         <div class="w-20 h-24 md:w-28 md:h-32 bg-white rounded-2xl border-4 border-khari-orange shadow-card flex items-center justify-center overflow-hidden">
                             <span id="reel-${i}" class="text-4xl md:text-6xl select-none">🥜</span>
                         </div>
                     `).join('')}
                 </div>
+                <p id="slots-msg" class="text-center text-khari-brown/70 font-semibold mb-4 min-h-[1.5em]"></p>
                 <div class="flex justify-center">
                     <button id="slots-btn" onclick="spinSlots()" class="khari-gradient text-white px-12 py-4 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-widest text-lg glow-pulse">
                         Pull Lever
@@ -1637,7 +1755,7 @@
         }
 
         function spinSlots() {
-            if (slotsSpinning) return;
+            if (slotsSpinning || slotsPullsLeft <= 0) return;
             slotsSpinning = true;
             playWhoosh();
 
@@ -1668,16 +1786,55 @@
         }
 
         function evaluateSlots(symbols) {
+            slotsSpinning = false;
+            slotsPullsLeft--;
+
             const counts = {};
             symbols.forEach(s => counts[s] = (counts[s] || 0) + 1);
             const maxCount = Math.max(...Object.values(counts));
 
+            let msg = '';
             if (maxCount === 3) {
-                showResult('JACKPOT!', `Triple match! ${symbols.join(' ')}`, true, SLOT_PAYOUTS[3]);
+                const reward = SLOT_PAYOUTS[3];
+                slotsTotalWon += reward;
+                addCoins(reward);
+                playWin();
+                spawnConfetti(70);
+                msg = `🎉 JACKPOT! Triple match — +${reward} coins!`;
             } else if (maxCount === 2) {
-                showResult('Nice Pair!', `Two matching symbols: ${symbols.join(' ')}`, true, SLOT_PAYOUTS[2]);
+                const reward = SLOT_PAYOUTS[2];
+                slotsTotalWon += reward;
+                addCoins(reward);
+                playWin();
+                spawnConfetti(35);
+                msg = `Nice pair! +${reward} coins.`;
             } else {
-                showResult('No Match', `${symbols.join(' ')} — no matching symbols this time.`, false);
+                msg = `No match this pull — try again.`;
+            }
+
+            if (slotsPullsLeft <= 0) {
+                setCooldown('slots');
+                setTimeout(() => {
+                    showResult(
+                        slotsTotalWon > 0 ? 'Round Complete!' : 'Round Over',
+                        slotsTotalWon > 0
+                            ? `You won ${slotsTotalWon} coins across 3 pulls. Snack Slots is locked for 2 minutes.`
+                            : `No luck this round. Snack Slots is locked for 2 minutes — try again soon!`,
+                        slotsTotalWon > 0,
+                        0
+                    );
+                }, 900);
+            } else {
+                const msgEl = document.getElementById('slots-msg');
+                if (msgEl) msgEl.innerText = msg;
+                const pullsEl = document.getElementById('slots-pulls-left');
+                if (pullsEl) pullsEl.innerText = `${slotsPullsLeft} pulls left`;
+                const btn = document.getElementById('slots-btn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.add('glow-pulse');
+                    btn.classList.remove('opacity-60', 'cursor-not-allowed');
+                }
             }
         }
 
@@ -1687,6 +1844,7 @@
         let scrambleState = null;
         let scrambleTimer;
         let scrambleTimeLeft = 20;
+        const SCRAMBLE_HINT_COSTS = { 2: 5, 3: 8 }; // cost in Khari Coins for 2nd / 3rd letter
 
         function scrambleWord(word) {
             const letters = word.replace(/\s/g, '').split('');
@@ -1705,7 +1863,7 @@
             const cleanName = item.name.toUpperCase();
             const scrambled = scrambleWord(cleanName);
 
-            scrambleState = { answer: cleanName, locked: false };
+            scrambleState = { answer: cleanName, locked: false, hintsBought: 1 }; // index 1 = first letter always shown free
             scrambleTimeLeft = 20;
 
             DOM.gameContent.innerHTML = `
@@ -1725,13 +1883,21 @@
                     </div>
                 </div>
                 <div class="max-w-md mx-auto w-full">
+                    <p class="text-center text-khari-brown font-bold text-sm mb-3" id="scramble-hint-display">Hint: ${cleanName[0]} _ _ ...</p>
                     <input id="scramble-input" type="text" autocomplete="off" placeholder="Type your answer..."
                         class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-5 py-3.5 text-khari-brown font-bold text-center text-lg outline-none mb-4"
                         onkeydown="if(event.key==='Enter') submitScramble()">
-                    <button onclick="submitScramble()" class="khari-gradient text-white w-full py-3.5 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm">
+                    <button onclick="submitScramble()" class="khari-gradient text-white w-full py-3.5 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm mb-3">
                         Submit Answer
                     </button>
-                    <button onclick="revealScrambleHint()" class="mt-3 w-full text-khari-orange font-bold text-sm underline">Show first letter hint</button>
+                    <div class="flex gap-3">
+                        <button id="hint-btn-2" onclick="buyScrambleHint(2)" class="flex-1 bg-white border-2 border-khari-orange text-khari-orange font-bold text-xs py-2.5 rounded-full uppercase tracking-wide hover:bg-khari-cream transition-colors">
+                            Buy 2nd Letter · ${SCRAMBLE_HINT_COSTS[2]} coins
+                        </button>
+                        <button id="hint-btn-3" onclick="buyScrambleHint(3)" class="flex-1 bg-white border-2 border-khari-orange text-khari-orange font-bold text-xs py-2.5 rounded-full uppercase tracking-wide hover:bg-khari-cream transition-colors" disabled>
+                            Buy 3rd Letter · ${SCRAMBLE_HINT_COSTS[3]} coins
+                        </button>
+                    </div>
                 </div>
             `;
 
@@ -1756,10 +1922,34 @@
             }, 1000);
         }
 
-        function revealScrambleHint() {
+        function buyScrambleHint(letterPos) {
+            if (!scrambleState || scrambleState.locked) return;
+            // Must buy hints in order: 2nd letter before 3rd
+            if (letterPos !== scrambleState.hintsBought + 1) return;
+            const cost = SCRAMBLE_HINT_COSTS[letterPos];
+            if (khariCoins < cost) {
+                const btn = document.getElementById(`hint-btn-${letterPos}`);
+                if (btn) { btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 500); }
+                return;
+            }
             playClick();
-            const input = document.getElementById('scramble-input');
-            if (input && scrambleState) input.placeholder = `Starts with "${scrambleState.answer[0]}"...`;
+            addCoins(-cost);
+            scrambleState.hintsBought = letterPos;
+
+            const revealed = scrambleState.answer.slice(0, letterPos).split('').join(' ');
+            const display = document.getElementById('scramble-hint-display');
+            if (display) display.innerText = `Hint: ${revealed} _ ...`;
+
+            const thisBtn = document.getElementById(`hint-btn-${letterPos}`);
+            if (thisBtn) {
+                thisBtn.disabled = true;
+                thisBtn.innerText = 'Hint Revealed ✓';
+                thisBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            if (letterPos === 2) {
+                const nextBtn = document.getElementById('hint-btn-3');
+                if (nextBtn) nextBtn.disabled = false;
+            }
         }
 
         function submitScramble() {
@@ -1838,20 +2028,20 @@
                 renderCoupons();
                 return;
             }
-            if (label) label.innerText = 'Syncing with Google Sheet…';
+            if (label) label.innerText = 'Connecting to the snackbar… I mean, server…';
             try {
                 const catalogRes = await fetch(`${SHEET_API_URL}?action=catalog`).then(r => r.json());
                 if (Array.isArray(catalogRes) && catalogRes.length > 0) {
                     COUPON_CATALOG = catalogRes;
                     sheetConnected = true;
-                    if (label) label.innerText = '🟢 Live — synced with Google Sheet';
+                    if (label) label.innerText = '🟢 Live — connected to the server';
                 } else {
                     sheetConnected = false;
-                    if (label) label.innerText = '⚠️ Sheet returned no coupon types — showing offline list';
+                    if (label) label.innerText = '⚠️ Server returned nothing — showing offline list';
                 }
             } catch (err) {
                 sheetConnected = false;
-                if (label) label.innerText = '⚠️ Could not reach Google Sheet — showing offline list';
+                if (label) label.innerText = '⚠️ Could not reach the server — showing offline list';
             }
             renderCoupons();
         }
@@ -1865,14 +2055,12 @@
         }
 
         /* ===================================================================
-           ADMIN PANEL
-           - If a Google Sheet is connected, this panel just points the
-             store owner to the Sheet (that's now the source of truth).
-           - If no Sheet is connected, it falls back to a single local
-             "offline backup code" per coupon, stored in this browser only.
+           OFFLINE COUPON CODES
+           - If a Google Sheet is connected, that's the source of truth.
+           - If no Sheet is connected, falls back to a single local
+             "offline backup code" per coupon, stored in this browser only
+             (set directly via localStorage if you need to change one).
         =================================================================== */
-        const ADMIN_PIN = '2580'; // Change this PIN to whatever you like
-
         function getOfflineCode(couponId) {
             return localStorage.getItem(`khariCode_${couponId}`) || '';
         }
@@ -1881,92 +2069,20 @@
             else localStorage.removeItem(`khariCode_${couponId}`);
         }
 
-        function openAdminGate() {
-            playClick();
-            document.getElementById('admin-pin-input').value = '';
-            document.getElementById('admin-pin-error').classList.add('hidden');
-            document.getElementById('admin-gate-container').classList.remove('hidden');
-            setTimeout(() => document.getElementById('admin-pin-input').focus(), 100);
-        }
-        function closeAdminGate() {
-            document.getElementById('admin-gate-container').classList.add('hidden');
-        }
-        function checkAdminPin() {
-            const val = document.getElementById('admin-pin-input').value;
-            if (val === ADMIN_PIN) {
-                closeAdminGate();
-                openAdminPanel();
+        function revealOurPlayers() {
+            const section = document.getElementById('products-shop');
+            if (!section) return;
+            const isHidden = section.classList.contains('hidden');
+            if (isHidden) {
+                section.classList.remove('hidden');
+                section.classList.add('pop-in');
+                playWin();
+                spawnConfetti(40);
+                setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
             } else {
-                document.getElementById('admin-pin-error').classList.remove('hidden');
+                playClick();
+                section.classList.add('hidden');
             }
-        }
-
-        function openAdminPanel() {
-            const select = document.getElementById('admin-coupon-select');
-            select.innerHTML = COUPON_CATALOG.map(c => `<option value="${c.id}">${c.title} (${c.desc})</option>`).join('');
-
-            const sheetBox = document.getElementById('admin-sheet-connected-box');
-            const modeDesc = document.getElementById('admin-mode-desc');
-            const addBtn = document.getElementById('admin-add-btn');
-            const clearBtn = document.getElementById('admin-clear-btn');
-            const textareaLabel = document.getElementById('admin-textarea-label');
-            const footerNote = document.getElementById('admin-footer-note');
-            const openLink = document.getElementById('admin-open-sheet-link');
-            const textarea = document.getElementById('admin-codes-textarea');
-
-            if (sheetConnected) {
-                sheetBox.classList.remove('hidden');
-                modeDesc.innerText = 'Your live Google Sheet is the source of truth for coupon types and codes.';
-                addBtn.classList.add('hidden');
-                clearBtn.classList.add('hidden');
-                textareaLabel.classList.add('hidden');
-                textarea.classList.add('hidden');
-                footerNote.innerText = 'Everything below is unused while the Sheet is connected. To change a code, edit the "code" cell for that row in the CouponTypes tab and save — every customer who redeems that coupon will get the new code right away.';
-                document.getElementById('admin-pool-status').classList.add('hidden');
-                if (SHEET_EDIT_URL) { openLink.href = SHEET_EDIT_URL; openLink.classList.remove('hidden'); }
-                else { openLink.classList.add('hidden'); }
-            } else {
-                sheetBox.classList.add('hidden');
-                modeDesc.innerText = 'No Google Sheet connected yet. Set one shared code per coupon below as an offline backup — everyone who redeems that coupon gets this same code, today.';
-                addBtn.classList.remove('hidden');
-                addBtn.innerText = 'Save Code';
-                clearBtn.classList.remove('hidden');
-                textareaLabel.classList.remove('hidden');
-                textareaLabel.innerText = "Today's code for this coupon";
-                textarea.classList.remove('hidden');
-                textarea.rows = 2;
-                textarea.placeholder = 'e.g. KHARI10-0701';
-                document.getElementById('admin-pool-status').classList.remove('hidden');
-                footerNote.innerText = 'How it works: this offline code lives only in this browser. Every customer who redeems this coupon while connected to this device gets this same code — no per-customer limit. For a code that you and your team can edit from anywhere, connect a Google Sheet (see the setup guide).';
-                renderAdminPoolStatus();
-            }
-
-            document.getElementById('admin-panel-container').classList.remove('hidden');
-        }
-        function closeAdminPanel() {
-            document.getElementById('admin-panel-container').classList.add('hidden');
-        }
-        function renderAdminPoolStatus() {
-            const id = document.getElementById('admin-coupon-select').value;
-            const code = getOfflineCode(id);
-            document.getElementById('admin-pool-status').innerText = code
-                ? `Current offline code: ${code}`
-                : `No offline code set yet — a generic placeholder code will be used until you set one.`;
-            document.getElementById('admin-codes-textarea').value = code;
-        }
-        function addCodesToPool() {
-            const id = document.getElementById('admin-coupon-select').value;
-            const code = document.getElementById('admin-codes-textarea').value.trim().split('\n')[0];
-            if (!code) return;
-            setOfflineCode(id, code);
-            renderAdminPoolStatus();
-            playWin();
-        }
-        function clearAdminPool() {
-            const id = document.getElementById('admin-coupon-select').value;
-            if (!confirm('Clear the offline code for this coupon?')) return;
-            setOfflineCode(id, '');
-            renderAdminPoolStatus();
         }
 
         function renderCoupons() {
