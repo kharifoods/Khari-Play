@@ -727,7 +727,7 @@
                 <div class="relative bg-white rounded-2xl p-4 border-4 border-khari-cream hover:border-khari-orange shadow-sm flex flex-col items-center text-center transition-all cursor-pointer group" onclick="openProductDetail(${i})">
                     <span class="text-[9px] font-bold uppercase tracking-widest text-khari-orange/70 mb-1">${p.category}</span>
                     <div class="h-16 w-16 md:h-20 md:w-20 mb-2 flex items-center justify-center">
-                        <img src="${imgUrl}" alt="${p.name}" class="game-item-img max-h-full max-w-full object-contain drop-shadow-sm" onerror="this.src='https://placehold.co/200x200/FCF7F2/F27B21?text=Khari+Foods'">
+                        <img src="${imgUrl}" alt="${p.name}" loading="lazy" class="game-item-img max-h-full max-w-full object-contain drop-shadow-sm" onerror="this.src='https://placehold.co/200x200/FCF7F2/F27B21?text=Khari+Foods'">
                     </div>
                     <h4 class="font-bold text-khari-brown text-xs md:text-sm leading-tight mb-2 line-clamp-2">${p.name}</h4>
                     <span class="inline-block bg-khari-cream text-khari-orange text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3">⚡ ${p.power}</span>
@@ -1918,13 +1918,51 @@
             return shuffled;
         }
 
+        function renderScrambleHint() {
+            if (!scrambleState) return "";
+            let display = '';
+            for (let i = 0; i < scrambleState.answer.length; i++) {
+                if (scrambleState.answer[i] === ' ') {
+                    display += '&nbsp;&nbsp; '; 
+                } else if (scrambleState.revealedIndices.includes(i)) {
+                    display += scrambleState.answer[i] + ' ';
+                } else {
+                    display += '_ ';
+                }
+            }
+            return display.trim();
+        }
+
         function initScramble() {
             const pool = productsDB.filter(p => p.name.replace(/[^a-zA-Z]/g, '').length >= 4);
             const item = pool[Math.floor(Math.random() * pool.length)];
             const cleanName = item.name.toUpperCase();
             const scrambled = scrambleWord(cleanName);
 
-            scrambleState = { answer: cleanName, locked: false, hintsBought: 1 }; // index 1 = first letter always shown free
+            // Determine if it's long or has multiple words
+            const wordsCount = cleanName.split(' ').length;
+            const charCount = cleanName.replace(/\s/g, '').length;
+            
+            let revealedIndices = new Set();
+            
+            // Find all valid non-space indices
+            let validIndices = [];
+            for(let i = 0; i < cleanName.length; i++) {
+                if (cleanName[i] !== ' ') validIndices.push(i);
+            }
+
+            // Always reveal the first letter
+            if (validIndices.length > 0) revealedIndices.add(validIndices[0]);
+
+            // If it has 3+ words or is long (> 10 chars), reveal 2 extra random positions
+            if (wordsCount >= 3 || charCount > 10) {
+                let candidates = validIndices.filter(i => i !== validIndices[0]);
+                candidates.sort(() => 0.5 - Math.random());
+                if (candidates.length > 0) revealedIndices.add(candidates[0]);
+                if (candidates.length > 1) revealedIndices.add(candidates[1]);
+            }
+
+            scrambleState = { answer: cleanName, locked: false, hintsBought: 1, revealedIndices: Array.from(revealedIndices) };
             scrambleTimeLeft = 60;
 
             DOM.gameContent.innerHTML = `
@@ -1944,7 +1982,7 @@
                     </div>
                 </div>
                 <div class="max-w-md mx-auto w-full">
-                    <p class="text-center text-khari-brown font-bold text-sm mb-3" id="scramble-hint-display">Hint: ${cleanName[0]} _ _ ...</p>
+                    <p class="text-center text-khari-brown font-bold text-sm mb-3" id="scramble-hint-display">Hint: ${renderScrambleHint()}</p>
                     <input id="scramble-input" type="text" autocomplete="off" placeholder="Type your answer..."
                         class="w-full border-2 border-khari-cream focus:border-khari-orange rounded-2xl px-5 py-3.5 text-khari-brown font-bold text-center text-lg outline-none mb-4"
                         onkeydown="if(event.key==='Enter') submitScramble()">
@@ -1953,10 +1991,10 @@
                     </button>
                     <div class="flex gap-3">
                         <button id="hint-btn-2" onclick="buyScrambleHint(2)" class="flex-1 bg-white border-2 border-khari-orange text-khari-orange font-bold text-xs py-2.5 rounded-full uppercase tracking-wide hover:bg-khari-cream transition-colors">
-                            Buy 2nd Letter · ${SCRAMBLE_HINT_COSTS[2]} coins
+                            Buy 2nd Hint · ${SCRAMBLE_HINT_COSTS[2]} coins
                         </button>
                         <button id="hint-btn-3" onclick="buyScrambleHint(3)" class="flex-1 bg-white border-2 border-khari-orange text-khari-orange font-bold text-xs py-2.5 rounded-full uppercase tracking-wide hover:bg-khari-cream transition-colors" disabled>
-                            Buy 3rd Letter · ${SCRAMBLE_HINT_COSTS[3]} coins
+                            Buy 3rd Hint · ${SCRAMBLE_HINT_COSTS[3]} coins
                         </button>
                     </div>
                 </div>
@@ -1983,31 +2021,42 @@
             }, 1000);
         }
 
-        function buyScrambleHint(letterPos) {
+        function buyScrambleHint(hintLevel) {
             if (!scrambleState || scrambleState.locked) return;
             // Must buy hints in order: 2nd letter before 3rd
-            if (letterPos !== scrambleState.hintsBought + 1) return;
-            const cost = SCRAMBLE_HINT_COSTS[letterPos];
+            if (hintLevel !== scrambleState.hintsBought + 1) return;
+            const cost = SCRAMBLE_HINT_COSTS[hintLevel];
             if (khariCoins < cost) {
-                const btn = document.getElementById(`hint-btn-${letterPos}`);
+                const btn = document.getElementById(`hint-btn-${hintLevel}`);
                 if (btn) { btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 500); }
                 return;
             }
             playClick();
             addCoins(-cost);
-            scrambleState.hintsBought = letterPos;
+            scrambleState.hintsBought = hintLevel;
 
-            const revealed = scrambleState.answer.slice(0, letterPos).split('').join(' ');
+            // Reveal one random unrevealed letter
+            let unrevealed = [];
+            for (let i = 0; i < scrambleState.answer.length; i++) {
+                if (scrambleState.answer[i] !== ' ' && !scrambleState.revealedIndices.includes(i)) {
+                    unrevealed.push(i);
+                }
+            }
+            if (unrevealed.length > 0) {
+                unrevealed.sort(() => 0.5 - Math.random());
+                scrambleState.revealedIndices.push(unrevealed[0]);
+            }
+
             const display = document.getElementById('scramble-hint-display');
-            if (display) display.innerText = `Hint: ${revealed} _ ...`;
+            if (display) display.innerHTML = `Hint: ${renderScrambleHint()}`;
 
-            const thisBtn = document.getElementById(`hint-btn-${letterPos}`);
+            const thisBtn = document.getElementById(`hint-btn-${hintLevel}`);
             if (thisBtn) {
                 thisBtn.disabled = true;
                 thisBtn.innerText = 'Hint Revealed ✓';
                 thisBtn.classList.add('opacity-50', 'cursor-not-allowed');
             }
-            if (letterPos === 2) {
+            if (hintLevel === 2) {
                 const nextBtn = document.getElementById('hint-btn-3');
                 if (nextBtn) nextBtn.disabled = false;
             }
@@ -2136,10 +2185,13 @@
             const isHidden = section.classList.contains('hidden');
             if (isHidden) {
                 section.classList.remove('hidden');
-                section.classList.add('pop-in');
+                section.classList.remove('pop-in'); 
+                section.classList.add('fade-in'); 
                 playWin();
                 spawnConfetti(40);
-                setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+                setTimeout(() => {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
             } else {
                 playClick();
                 section.classList.add('hidden');
