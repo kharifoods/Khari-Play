@@ -68,6 +68,26 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
+        /* Footer easter egg — meant to feel like an accidental glimmer, not an obvious button */
+        .footer-egg-sparkle {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(0.3px);
+            animation: footer-egg-glint 9s ease-in-out infinite;
+        }
+        @keyframes footer-egg-glint {
+            0%, 82% { opacity: 0; transform: scale(0.6) rotate(0deg); }
+            86% { opacity: 1; transform: scale(1.25) rotate(-8deg); }
+            90% { opacity: 0.7; transform: scale(1) rotate(6deg); }
+            94% { opacity: 0; transform: scale(0.6) rotate(0deg); }
+            100% { opacity: 0; transform: scale(0.6) rotate(0deg); }
+        }
+        .footer-easter-egg:hover .footer-egg-sparkle {
+            animation: none;
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
         /* Card Flip Animations */
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
@@ -298,6 +318,8 @@
 </head>
 
 <body class="min-h-screen flex flex-col relative overflow-x-hidden">
+    <!-- Background music: plays once (no loop), can be replayed manually via the music button -->
+    <audio id="bg-music" preload="auto" src="https://raw.githubusercontent.com/kharifoods/Khari-Play/eb54704d65f4fe6b94c870d26e308b33f35a95be/Khari%20Foods.mp3"></audio>
 
     <!-- ============ LOGIN / PRELOAD SCREEN ============ -->
     <div id="login-screen" class="fixed inset-0 z-[100] bg-khari-cream flex items-center justify-center px-4">
@@ -470,8 +492,8 @@
                     <svg class="w-12 h-12 text-khari-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <h3 class="text-2xl font-rum text-khari-brown mb-2">Snack Trivia</h3>
-                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">3 quick questions on healthy snacking. Know your stuff?</p>
-                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 30 Coins</button>
+                <p class="text-sm text-khari-brown opacity-75 mb-8 font-medium">5 quick questions on healthy snacking. Know your stuff?</p>
+                <button class="mt-auto khari-gradient text-white px-8 py-3 rounded-full font-bold shadow-bubbly btn-bubbly w-full uppercase tracking-wider text-sm">Earn up to 50 Coins</button>
             </div>
 
             <!-- Game 7: Scratch & Win (NEW) -->
@@ -555,15 +577,22 @@
             <div class="p-6 md:p-8 overflow-y-auto no-scrollbar">
                 <h3 class="text-3xl font-rum text-khari-orange mb-1 text-center">My Coupons</h3>
                 <p class="text-sm text-khari-brown/70 font-medium text-center mb-6">Tap a code to copy it</p>
-                <div id="wallet-list" class="space-y-3"></div>
+                <div id="wallet-list" class="space-y-3 mb-5"></div>
+                <button onclick="useCouponsGoShop()" class="khari-gradient text-white w-full py-3.5 rounded-full font-bold shadow-bubbly btn-bubbly uppercase tracking-wider text-sm flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Use Your Coupons
+                </button>
             </div>
         </div>
     </div>
 
     <footer class="relative z-10 text-center py-6 text-xs text-khari-brown/50 font-medium">
         Khari Foods Arcade &mdash; Feel Good Snacking
-        <span class="block mt-1">
-            <button onclick="revealOurPlayers()" class="text-khari-brown/30 hover:text-khari-orange underline-offset-2 hover:underline text-[10px] tracking-wide">Our Players</button>
+        <span class="block mt-1.5">
+            <button onclick="revealOurPlayers()" class="footer-easter-egg relative inline-flex items-center gap-1 text-khari-brown/25 hover:text-khari-orange text-[10px] tracking-wide transition-colors">
+                <span class="footer-egg-sparkle">✨</span>
+                <span>Our Players</span>
+            </button>
         </span>
     </footer>
 
@@ -651,11 +680,11 @@
             { name: 'Pistachios', category: 'Nuts', file: 'Pistachios.png', power: 'Protein & Focus' },
             { name: 'Walnut kernels', category: 'Nuts', file: 'Walnut kernels.png', power: 'Brain Power Fuel' },
             
-            { name: 'Beetroot Peri Peri', category: 'Savory', file: 'Beetroot Peri Peri.png', power: 'Guilt-Free Crunch' },
-            { name: 'Jowar Pops Cheesy Tomato', category: 'Savory', file: 'Jowar Pops Cheesy Tomato.png', power: 'Whole-Grain Crunch' },
-            { name: 'Jowar Pops Cream & Onion', category: 'Savory', file: 'Jowar Pops Cream & Onion.png', power: 'Whole-Grain Zing' },
-            { name: 'Oats masala', category: 'Savory', file: 'Oats masala.png', power: 'Steady Energy Release' },
-            { name: 'Ragi Tandoori', category: 'Savory', file: 'Ragi Tandoori.png', power: 'Calcium & Crunch' },
+            { name: 'Beetroot Peri Peri', category: 'Crispies', file: 'Beetroot Peri Peri.png', power: 'Guilt-Free Crunch' },
+            { name: 'Jowar Pops Cheesy Tomato', category: 'Crispies', file: 'Jowar Pops Cheesy Tomato.png', power: 'Whole-Grain Crunch' },
+            { name: 'Jowar Pops Cream & Onion', category: 'Crispies', file: 'Jowar Pops Cream & Onion.png', power: 'Whole-Grain Zing' },
+            { name: 'Oats masala', category: 'Crispies', file: 'Oats masala.png', power: 'Steady Energy Release' },
+            { name: 'Ragi Tandoori', category: 'Crispies', file: 'Ragi Tandoori.png', power: 'Calcium & Crunch' },
 
             { name: 'Phool Makhana', category: 'Makhana', file: 'Phool Makhana.png', power: 'Pure Roasted Crunch' },
             { name: 'Roasted Makhana Cream & Onion', category: 'Makhana', file: 'Roasted Makhana Cream & Onion.png', power: 'Light & Filling' },
@@ -719,6 +748,10 @@
                 </div>
                 <h3 class="font-rum text-2xl text-khari-brown mb-2 leading-tight">${p.name}</h3>
                 <span class="inline-block bg-khari-orange/10 text-khari-orange text-xs font-bold uppercase tracking-wide px-4 py-1.5 rounded-full mb-6 border border-khari-orange/30">⚡ Superpower: ${p.power}</span>
+                <a href="https://kharifoods.com/" target="_blank" rel="noopener" class="w-full inline-flex items-center justify-center gap-2 bg-khari-brown text-white text-sm font-bold uppercase tracking-wider py-3 rounded-full shadow-bubbly btn-bubbly mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Our Shop
+                </a>
                 <p class="text-xs font-bold uppercase tracking-widest text-khari-brown/50 mb-3">Buy this player on</p>
                 <div class="flex flex-col gap-2.5">
                     ${BUY_PLATFORMS.map(platform => `
@@ -882,57 +915,58 @@
             document.getElementById('sound-icon-off').classList.toggle('hidden', soundOn);
         })();
 
-        /* ===================== BACKGROUND MUSIC (WebAudio, no assets needed) =====================
-           A gentle looping pentatonic tune, independent from the Sound (SFX) toggle above.
-           Starts the first time the person taps "Start Playing" (a real user gesture is
-           required before browsers allow audio to play).
+        /* ===================== BACKGROUND MUSIC (real mp3 file) =====================
+           Plays the Khari Foods theme song ONCE — no looping. It auto-stops itself
+           when the track finishes (the music button icon flips to "off"), but the
+           person can always tap the music button again to manually replay it.
+           Starts the first time the person taps "Start Playing" (a real user gesture
+           is required before browsers allow audio to play).
         =================================================================== */
         let musicOn = localStorage.getItem('khariMusicOn') !== 'off';
-        let musicTimer = null;
-        let musicStep = 0;
-        const MUSIC_PATTERN = [523.25, null, 659.25, 587.33, null, 783.99, 659.25, null, 880.00, 783.99, null, 659.25, 587.33, null, 523.25, null];
+        const bgMusic = document.getElementById('bg-music');
+        if (bgMusic) bgMusic.loop = false;
 
-        function playMusicNote(freq) {
-            const ctx = getAudioCtx();
-            if (!ctx) return;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.value = freq;
-            const t0 = ctx.currentTime;
-            gain.gain.setValueAtTime(0.0001, t0);
-            gain.gain.linearRampToValueAtTime(0.035, t0 + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.4);
-            osc.connect(gain).connect(ctx.destination);
-            osc.start(t0);
-            osc.stop(t0 + 0.45);
+        function setMusicIcon(isPlaying) {
+            document.getElementById('music-icon-on').classList.toggle('hidden', !isPlaying);
+            document.getElementById('music-icon-off').classList.toggle('hidden', isPlaying);
         }
 
         function startBackgroundMusic() {
-            if (!musicOn || musicTimer) return;
-            const ctx = getAudioCtx();
-            if (ctx && ctx.state === 'suspended') ctx.resume();
-            musicTimer = setInterval(() => {
-                const freq = MUSIC_PATTERN[musicStep % MUSIC_PATTERN.length];
-                if (freq) playMusicNote(freq);
-                musicStep++;
-            }, 380);
+            if (!musicOn || !bgMusic) return;
+            bgMusic.currentTime = 0;
+            bgMusic.play().catch(() => {});
+            setMusicIcon(true);
         }
 
         function stopBackgroundMusic() {
-            if (musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+            if (!bgMusic) return;
+            bgMusic.pause();
+            setMusicIcon(false);
+        }
+
+        // When the track finishes playing on its own (no loop), flip the icon to
+        // "off" automatically, but leave musicOn as-is so a manual tap replays it.
+        if (bgMusic) {
+            bgMusic.addEventListener('ended', () => {
+                setMusicIcon(false);
+            });
         }
 
         function toggleMusic() {
-            musicOn = !musicOn;
-            localStorage.setItem('khariMusicOn', musicOn ? 'on' : 'off');
-            document.getElementById('music-icon-on').classList.toggle('hidden', !musicOn);
-            document.getElementById('music-icon-off').classList.toggle('hidden', musicOn);
-            if (musicOn) { startBackgroundMusic(); } else { stopBackgroundMusic(); }
+            if (bgMusic && !bgMusic.paused) {
+                // Currently playing -> manual stop
+                musicOn = false;
+                localStorage.setItem('khariMusicOn', 'off');
+                stopBackgroundMusic();
+            } else {
+                // Currently stopped/ended -> manual (re)play from the start
+                musicOn = true;
+                localStorage.setItem('khariMusicOn', 'on');
+                startBackgroundMusic();
+            }
         }
         (function initMusicIcon() {
-            document.getElementById('music-icon-on').classList.toggle('hidden', !musicOn);
-            document.getElementById('music-icon-off').classList.toggle('hidden', musicOn);
+            setMusicIcon(false);
         })();
 
         /* ===================== CONFETTI ===================== */
@@ -1102,7 +1136,7 @@
 
         function initCaptcha() {
             selectedCaptchaItems = [];
-            const categories = ['Fruits', 'Nuts', 'Seeds', 'Dates', 'Savory', 'Makhana'];
+            const categories = ['Fruits', 'Nuts', 'Seeds', 'Dates', 'Crispies', 'Makhana'];
             const targetCategory = categories[Math.floor(Math.random() * categories.length)];
             
             // Ensure we have exactly 3 targets and 6 decoys for a 3x3 grid
@@ -1550,16 +1584,43 @@
         const QUIZ_BANK = [
             { q: "Which dried fruit is naturally high in fiber and a popular date substitute for sweetening dishes?", options: ["Medjool Dates", "Dried Kiwi", "Dried BlueBerries", "Pumpkin Seeds"], a: 0 },
             { q: "Which nut is well known for its high Omega-3 content?", options: ["Pistachios", "Walnuts", "Brazil Nuts", "Pecans"], a: 1 },
-            { q: "Chia and flax are both types of which snack category?", options: ["Nuts", "Dates", "Seeds", "Savory"], a: 2 },
+            { q: "Chia and flax are both types of which snack category?", options: ["Nuts", "Dates", "Seeds", "Crispies"], a: 2 },
             { q: "Which mineral is Brazil Nuts especially well known for providing?", options: ["Selenium", "Iron", "Calcium", "Zinc"], a: 0 },
-            { q: "Roasted Jowar Pops and Ragi Tandoori belong to which Khari snack category?", options: ["Fruits", "Dates", "Savory", "Seeds"], a: 2 },
+            { q: "Roasted Jowar Pops and Ragi Tandoori belong to which Khari snack category?", options: ["Fruits", "Dates", "Crispies", "Seeds"], a: 2 },
             { q: "Which fruit snack is a great natural source of Vitamin C when dried?", options: ["Dried Mango Slices", "Walnut kernels", "Chia Seeds", "Zahidi Dates"], a: 0 },
             { q: "Roasted Makhana (fox nuts) is naturally low in fat and high in which nutrient?", options: ["Protein", "Sugar", "Cholesterol", "Caffeine"], a: 0 },
-            { q: "Which Khari Makhana flavor brings a zesty, spicy South-Indian street food twist?", options: ["Mint Pudina", "Peri-Peri", "Cream & Onion", "Tandoori Tadka"], a: 1 }
+            { q: "Which Khari Makhana flavor brings a zesty, spicy South-Indian street food twist?", options: ["Mint Pudina", "Peri-Peri", "Cream & Onion", "Tandoori Tadka"], a: 1 },
+            { q: "Ajwa is a prized variety of which snack?", options: ["Dates", "Raisins", "Figs", "Apricots"], a: 0 },
+            { q: "Which dried fruit is famously called the 'king of fruits' for its iron and bone-supporting minerals?", options: ["Afghan Anjeer (Fig)", "Dried Cherries", "Green Raisins", "Dried Kiwi"], a: 0 },
+            { q: "Prunes are well known for supporting which part of the body?", options: ["Gut health", "Eyesight", "Hair growth", "Joint flexibility"], a: 0 },
+            { q: "Which dried fruit is a rich source of Vitamin A for healthy skin and eyes?", options: ["Dried Apricots", "Green Raisins", "Dried Strawberries", "Zahidi Dates"], a: 0 },
+            { q: "Dried Cherries are often linked with helping which of these?", options: ["Recovery & better sleep", "Faster hair growth", "Stronger nails", "Better eyesight"], a: 0 },
+            { q: "Pumpkin Seeds are a great natural source of which mineral tied to immunity?", options: ["Zinc", "Iodine", "Sodium", "Copper"], a: 0 },
+            { q: "Sunflower Seeds are packed with which vitamin known for skin health?", options: ["Vitamin E", "Vitamin B12", "Vitamin K", "Vitamin D"], a: 0 },
+            { q: "Raw Flax Seeds are considered a hero snack for which organ?", options: ["Heart", "Liver", "Kidneys", "Lungs"], a: 0 },
+            { q: "Which nut is most associated with supporting brain function?", options: ["Walnuts", "Pecans", "Pistachios", "Brazil Nuts"], a: 0 },
+            { q: "Pistachios are a popular snack for protein and which other benefit?", options: ["Focus", "Faster digestion", "Deeper sleep", "Stronger bones"], a: 0 },
+            { q: "Which Khari snack category do Beetroot Peri Peri and Oats Masala belong to?", options: ["Crispies", "Makhana", "Seeds", "Bars"], a: 0 },
+            { q: "Ragi Tandoori crispies are a good source of which mineral?", options: ["Calcium", "Sodium", "Potassium", "Magnesium"], a: 0 },
+            { q: "Phool Makhana is best known as a light, crunchy source of what?", options: ["Roasted crunch with low calories", "High sugar content", "Heavy oils", "Artificial flavoring"], a: 0 },
+            { q: "Which Khari Makhana flavor has a cooling, digestion-friendly twist?", options: ["Mint Pudina", "Peri-Peri", "Tandoori Tadka", "Cream & Onion"], a: 0 },
+            { q: "Mini Snackbars with Dates & Nuts are designed mainly for what kind of fuel?", options: ["On-the-go energy", "Post-workout hydration", "Overnight digestion", "Cold relief"], a: 0 },
+            { q: "The Honey & Fruits Mini Snackbar gets its natural sweetness mainly from what?", options: ["Honey", "Refined sugar", "Artificial syrup", "Jaggery powder"], a: 0 },
+            { q: "Snack Mixes like 'Daily Snack Mix' are designed to give you what kind of nutrition?", options: ["An everyday balanced mix", "Only sugar", "Only fats", "Only water-soluble vitamins"], a: 0 },
+            { q: "The Dried Berries Mix is prized mainly for which property?", options: ["Antioxidants", "High sodium", "High starch", "Zero fiber"], a: 0 },
+            { q: "Which dried fruit is famous for supporting healthy vision?", options: ["Dried Mango Slices", "Black Afghan Raisin", "Kalmi Dates", "Chia Seeds"], a: 0 },
+            { q: "Green Raisins are a handy snack mainly valued for what?", options: ["Quick natural energy", "High protein", "Low sugar", "High fat"], a: 0 },
+            { q: "Black Afghan Raisins are especially rich in which mineral?", options: ["Iron", "Calcium", "Zinc", "Sodium"], a: 0 },
+            { q: "Pecan Nuts are mainly valued as a source of what?", options: ["Good fats", "Vitamin C", "Fiber only", "Caffeine"], a: 0 },
+            { q: "Medjool Dates are famous for offering what kind of energy?", options: ["Instant energy surge", "Slow-release only", "No natural sugar", "Only fiber, no sugar"], a: 0 },
+            { q: "Zahidi Dates are especially known for supporting what?", options: ["Fiber-rich digestion", "Muscle building", "Better eyesight", "Joint health"], a: 0 },
+            { q: "Which snack category do Roasted Makhana flavors belong to?", options: ["Makhana", "Crispies", "Seeds", "Fruits"], a: 0 },
+            { q: "Jowar Pops are made from which whole grain?", options: ["Jowar (sorghum)", "Wheat", "Rice", "Barley"], a: 0 },
+            { q: "Oats Masala crispies are valued for giving what kind of energy release?", options: ["Steady, slow-release energy", "A sudden sugar spike", "No energy at all", "Only hydration"], a: 0 }
         ];
 
         function initQuiz() {
-            const picks = [...QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 3);
+            const picks = [...QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 5);
             quizState = { picks, index: 0, correct: 0, locked: false };
             renderQuizQuestion();
         }
@@ -1843,7 +1904,7 @@
         =================================================================== */
         let scrambleState = null;
         let scrambleTimer;
-        let scrambleTimeLeft = 20;
+        let scrambleTimeLeft = 60;
         const SCRAMBLE_HINT_COSTS = { 2: 5, 3: 8 }; // cost in Khari Coins for 2nd / 3rd letter
 
         function scrambleWord(word) {
@@ -1864,7 +1925,7 @@
             const scrambled = scrambleWord(cleanName);
 
             scrambleState = { answer: cleanName, locked: false, hintsBought: 1 }; // index 1 = first letter always shown free
-            scrambleTimeLeft = 20;
+            scrambleTimeLeft = 60;
 
             DOM.gameContent.innerHTML = `
                 <div class="text-center mb-6 fade-in">
@@ -1873,7 +1934,7 @@
                     <div class="mt-4 flex justify-center items-center">
                         <div class="bg-white text-khari-orange font-bold text-2xl px-5 py-2 rounded-full flex items-center border-4 border-khari-cream shadow-sm font-rum" id="scramble-timer-wrap">
                             <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span id="scramble-timer">20</span>s
+                            <span id="scramble-timer">60</span>s
                         </div>
                     </div>
                 </div>
@@ -1908,7 +1969,7 @@
                 scrambleTimeLeft--;
                 const t = document.getElementById('scramble-timer');
                 if (t) t.innerText = scrambleTimeLeft;
-                if (scrambleTimeLeft <= 5) {
+                if (scrambleTimeLeft <= 10) {
                     const wrap = document.getElementById('scramble-timer-wrap');
                     if (wrap) wrap.classList.add('text-red-500', 'animate-pulse');
                 }
@@ -1963,7 +2024,7 @@
             if (guess === answerClean) {
                 scrambleState.locked = true;
                 clearInterval(scrambleTimer);
-                const reward = scrambleTimeLeft > 12 ? 35 : scrambleTimeLeft > 5 ? 25 : 15;
+                const reward = scrambleTimeLeft > 36 ? 35 : scrambleTimeLeft > 15 ? 25 : 15;
                 showResult('Word Wizard!', `Correct — it was "${scrambleState.answer}".`, true, reward);
             } else {
                 input.classList.add('shake', 'border-red-400');
@@ -2085,6 +2146,7 @@
             }
         }
 
+
         function renderCoupons() {
             const grid = document.getElementById('coupon-grid');
             if (!grid) return;
@@ -2163,6 +2225,12 @@
         }
         function closeCouponWallet() {
             document.getElementById('wallet-container').classList.add('hidden');
+        }
+        function useCouponsGoShop() {
+            playClick();
+            closeCouponWallet();
+            // Redirect straight to the Khari Foods shop so the person can use their coupon
+            window.open('https://kharifoods.com/', '_blank', 'noopener');
         }
         function renderWalletList() {
             pruneExpiredCoupons();
